@@ -2,15 +2,15 @@ import requests
 import re
 import json
 import time
+import random
 from bs4 import BeautifulSoup
 from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
-import requests
-import requests
-import random
 
-def safe_api_request(url, params, retries=5, base_wait_time=2):
+
+### 🔹 Safe API Request with Rate Limit Handling
+def safe_api_request(url, params, retries=5, base_wait_time=4):
     """
     Makes a request to the Stack Overflow API and retries if rate-limited (429 error).
     Implements exponential backoff to avoid hitting the limit again.
@@ -28,17 +28,68 @@ def safe_api_request(url, params, retries=5, base_wait_time=2):
 
         else:
             print(f"⚠️ API Error {response.status_code}: {response.text}")
-            return None 
+            return None
 
     print("❌ Failed after multiple retries due to API rate limits.")
-    return None  
+    return None
 
+
+### 🔹 Check API Quota Before Running
+def check_api_quota():
+    """
+    Checks the Stack Overflow API quota before making requests.
+    If quota is too low, waits and retries later.
+    """
+    api_url = "https://api.stackexchange.com/2.3/info"
+    params = {"site": "stackoverflow"}
+
+    try:
+        response = requests.get(api_url, params=params, timeout=10)
+        data = response.json()
+
+        quota_remaining = data.get("quota_remaining", "Unknown")
+        print(f"📌 **API Quota Remaining:** {quota_remaining}")
+
+        if quota_remaining == "Unknown" or quota_remaining == 0:
+            print("❌ API quota too low! Waiting 2.5 hours before retrying...")
+            time.sleep(9000)  # Sleep for 2.5 hours (2.5 * 3600)
+            
+            print("🔄 Retrying after 2.5 hours...")
+            response = requests.get(api_url, params=params, timeout=10)
+            data = response.json()
+            quota_remaining = data.get("quota_remaining", "Unknown")
+
+            if quota_remaining == "Unknown" or quota_remaining == 0:
+                print("❌ API quota still too low! Waiting another hour before retrying...")
+                time.sleep(3600)  # Wait another hour
+                return 0  # Skip processing this run
+
+        return quota_remaining
+    except requests.exceptions.RequestException as e:
+        print(f"⚠️ API request failed: {e}")
+        return 0  # Assume no quota available
+
+
+### 🔹 Save & Load Processed Question IDs
+def save_processed_questions(processed_questions, filename="processed_questions.json"):
+    """ Saves processed question IDs to a file to prevent duplicates. """
+    with open(filename, "w") as f:
+        json.dump(processed_questions, f, indent=4)
+
+def load_processed_questions(filename="processed_questions.json"):
+    """ Loads previously processed question IDs from a file. """
+    try:
+        with open(filename, "r") as f:
+            return set(json.load(f))  # Load as a set for fast lookups
+    except FileNotFoundError:
+        return set()  # Return an empty set if file doesn't exist
 
 
 def fetch_questions_with_errors(page=1, pagesize=100):
-    """
-    Fetches Stack Overflow questions while handling API rate limits.
-    """
+    """ Fetches Stack Overflow questions while handling API rate limits. """
+    if check_api_quota() == 0:  # If quota is low, stop fetching
+        return []
+
     api_url = "https://api.stackexchange.com/2.3/search"
     params = {
         "order": "desc",
@@ -51,12 +102,7 @@ def fetch_questions_with_errors(page=1, pagesize=100):
     }
 
     questions = safe_api_request(api_url, params)
-    
-    if questions is None:  # <- Handle API failure case
-        print(f"❌ Skipping page {page} due to API failure.")
-        return []
-
-    return questions
+    return questions if questions else []
 
 
 
@@ -124,7 +170,7 @@ def fetch_top_comment(answer_id):
 
 
 
-def scrape_stackoverflow_details(question_url):
+def scrape_stackoverflow_details(question_url, base_wait_time=4):
     """
     Scrapes Stack Overflow page to extract:
     - Full question body
@@ -133,7 +179,14 @@ def scrape_stackoverflow_details(question_url):
     """
     headers = {"User-Agent": "Mozilla/5.0"}
     response = requests.get(question_url, headers=headers)
-    if response.status_code != 200:
+    if response.status_code == 200:
+        print('Success: 200')
+    elif response.status_code == 429:  # Too many requests
+        wait_time = base_wait_time * 2 + random.uniform(0, 1)
+        print(f"⏳ Rate limited (429). Retrying in {round(wait_time, 2)}s...")
+        time.sleep(wait_time)
+        return {"body": None, "code_snippets": [], "explicit_error_message": []}
+    else:
         print(f"response: {response}")
         return {"body": None, "code_snippets": [], "explicit_error_message": []}
     
@@ -157,41 +210,51 @@ def scrape_stackoverflow_details(question_url):
     }
 
 def save_to_json(data, filename="python_errors_sample.json"):
-    """ Saves collected data to a JSON file """
+    """ Saves collected data to a JSON file. """
     with open(filename, "w") as f:
         json.dump(data, f, indent=4)
 
-def process_questions(num_questions=5000, save_every=500):
+def process_questions(num_questions=5000, save_every=100):
     """
-    Fetches, filters, and processes Stack Overflow questions containing PyTorch-related errors.
-    Saves progress every `save_every` questions to prevent data loss.
+    Fetches, filters, and processes Stack Overflow questions while avoiding duplicates.
+    Automatically resumes after quota resets.
     """
     collected_questions = []
+    processed_questions = load_processed_questions()  # Load previously processed question IDs
     page = 1
 
+    print(f"🔍 Starting to fetch {num_questions} questions...")
+
     while len(collected_questions) < num_questions:
+        print(f'🔄 Fetching questions from page {page}...')
         questions = fetch_questions_with_errors(page, pagesize=100)
-        print(f'🔍 Fetching questions from page {page}...')
-        q_no = 1
+
         if not questions:
-            print(f"⚠️ No questions returned on page {page}. Skipping...")
+            print(f"⚠️ No questions returned on page {page}. Skipping to next page.")
             page += 1
             continue
 
+        q_no = 1  # Question counter for debugging
+
         for q in questions:
-            print(f"Processing question {q_no} on page {page}...")
+            print(f"⚡ Processing question {q_no} on page {page}...")
             q_no += 1
             question_id = q.get("question_id")
             question_url = q.get("link")
-            # Scrape question details to extract the full body and code snippets
+
+            # Skip already processed questions
+            if question_id in processed_questions:
+                print(f"🔄 Skipping already processed question {question_id}.")
+                continue  
+
+            # Scrape question details
             scraped_data = scrape_stackoverflow_details(question_url)
             body_text = scraped_data.get("body", "")
             code_snippets = scraped_data.get("code_snippets", [])
 
-            # Log progress every 10 questions
-            if q_no % 10 == 0:
-                print(f"body_text: {body_text}")
-                print(f"code_snippets: {code_snippets}")
+            # Debugging: Log progress every 10 questions
+            if q_no % 10 == 0 and body_text != None:
+                print(f"📝 Question {q_no}: body_text length={len(body_text)}, code_snippets={len(code_snippets)}")
 
             # If no body text, use code snippets as fallback
             if not body_text and code_snippets:
@@ -203,7 +266,9 @@ def process_questions(num_questions=5000, save_every=500):
                 continue 
 
             # Ensure stack trace exists in the final body text
-            if contains_stack_trace(body_text):  
+            if contains_stack_trace(body_text):
+                print(f"✅ Stack trace detected in question {question_id}. Fetching answers...")
+
                 # Fetch top answers
                 answers = fetch_top_answers(question_id)
                 if answers is None:  # <- Handle API failure
@@ -212,6 +277,7 @@ def process_questions(num_questions=5000, save_every=500):
                 top_answers_data = []
 
                 for answer in answers:
+                    print(f"📝 Processing answer {answer.get('answer_id')}...")
                     answer_data = {
                         "answer_text": answer.get("body", ""),
                         "upvotes": answer.get("score", 0),
@@ -237,18 +303,32 @@ def process_questions(num_questions=5000, save_every=500):
                     "top_answers": top_answers_data
                 })
 
+                # Mark question as processed
+                processed_questions.add(question_id)
+
                 # Save progress every `save_every` questions
                 if len(collected_questions) % save_every == 0:
+                    print(f"💾 Saving progress at {len(collected_questions)} questions...")
                     save_to_json(collected_questions, filename="python_errors_sample.json")
-                    print(f"💾 Saved progress at {len(collected_questions)} questions.")
+                    save_processed_questions(list(processed_questions))
+                    print(f"✅ Data successfully saved.")
 
                 if len(collected_questions) >= num_questions:
+                    print(f"🏁 Goal reached! {num_questions} questions processed. Stopping.")
                     break
 
         page += 1
+        print(f"🕒 Moving to next page: {page}")
         time.sleep(1)  # Avoid API Limits
 
+    # Final save before exiting
+    print("💾 Final save before exiting...")
+    save_to_json(collected_questions, filename="python_errors_sample.json")
+    save_processed_questions(list(processed_questions))
+    print("✅ Final save complete.")
+
     return collected_questions
+
 
 
 def store_in_faiss(questions, model_name="BAAI/bge-base-en-v1.5", batch_size=1000):
@@ -277,16 +357,12 @@ def store_in_faiss(questions, model_name="BAAI/bge-base-en-v1.5", batch_size=100
     print(f"✅ Final FAISS index saved with {len(texts)} questions.")
 
 
-
 if __name__ == "__main__":
-    print("Fetching and processing questions...")
+    print("🔍 Fetching and processing questions...")
     pytorch_questions = process_questions(num_questions=5000)
 
-    print("Saving dataset as JSON...")
+    print("💾 Saving dataset...")
     with open("python_errors_sample.json", "w") as f:
         json.dump(pytorch_questions, f, indent=4)
 
-    print("Storing in FAISS...")
-    store_in_faiss(pytorch_questions)
-
-    print("✅ Done! 5000 Python error questions stored in FAISS.")
+    print("✅ Done! Processed questions saved.")
