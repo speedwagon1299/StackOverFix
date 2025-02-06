@@ -217,11 +217,12 @@ def save_to_json(data, filename="python_errors_sample.json"):
 def process_questions(num_questions=5000, save_every=100):
     """
     Fetches, filters, and processes Stack Overflow questions while avoiding duplicates.
-    Automatically resumes after quota resets.
+    Saves after every page (100 questions).
     """
     collected_questions = []
     processed_questions = load_processed_questions()  # Load previously processed question IDs
     page = 1
+    processed_count = 0  # Counter for total processed questions
 
     print(f"🔍 Starting to fetch {num_questions} questions...")
 
@@ -235,6 +236,7 @@ def process_questions(num_questions=5000, save_every=100):
             continue
 
         q_no = 1  # Question counter for debugging
+        page_processed_questions = 0  # ✅ Counter for questions processed in the current page
 
         for q in questions:
             print(f"⚡ Processing question {q_no} on page {page}...")
@@ -253,7 +255,7 @@ def process_questions(num_questions=5000, save_every=100):
             code_snippets = scraped_data.get("code_snippets", [])
 
             # Debugging: Log progress every 10 questions
-            if q_no % 10 == 0 and body_text != None:
+            if q_no % 10 == 0 and body_text is not None:
                 print(f"📝 Question {q_no}: body_text length={len(body_text)}, code_snippets={len(code_snippets)}")
 
             # If no body text, use code snippets as fallback
@@ -265,57 +267,34 @@ def process_questions(num_questions=5000, save_every=100):
                 print(f"⚠️ Skipping question {question_id} due to missing body text.")
                 continue 
 
-            # Ensure stack trace exists in the final body text
-            if contains_stack_trace(body_text):
-                print(f"✅ Stack trace detected in question {question_id}. Fetching answers...")
+            # ✅ Store the question regardless of stack trace presence
+            collected_questions.append({
+                "title": q.get("title"),
+                "tags": q.get("tags", []),
+                "body": body_text,  # Fetched from scraping
+                "code_snippets": code_snippets,  # Extracted snippets from question
+                "explicit_error_message": re.findall(r"([A-Za-z]+Error: .*?)\n", body_text),  # Extract error messages
+                "creation_date": q.get("creation_date"),
+                "views": q.get("view_count"),
+                "top_answers": []  # Skipping answers to reduce API calls
+            })
 
-                # Fetch top answers
-                answers = fetch_top_answers(question_id)
-                if answers is None:  # <- Handle API failure
-                    print(f"⚠️ Skipping answers for question {question_id} due to API failure.")
-                    continue
-                top_answers_data = []
+            # Mark question as processed
+            processed_questions.add(question_id)
+            processed_count += 1  # ✅ Total processed count
+            page_processed_questions += 1  # ✅ Page-level processed count
 
-                for answer in answers:
-                    print(f"📝 Processing answer {answer.get('answer_id')}...")
-                    answer_data = {
-                        "answer_text": answer.get("body", ""),
-                        "upvotes": answer.get("score", 0),
-                        "answer_id": answer.get("answer_id"),
-                        "top_comment": fetch_top_comment(answer.get("answer_id"))
-                    }
+            # ✅ Save after every `save_every` processed questions (one page)
+            if page_processed_questions >= save_every:
+                print(f"💾 Saving progress after processing {page_processed_questions} questions from page {page}...")
+                save_to_json(collected_questions, filename="python_errors_sample.json")
+                save_processed_questions(list(processed_questions))
+                print(f"✅ Page {page} data successfully saved.")
+                page_processed_questions = 0  # Reset counter for next page
 
-                    # Extract code snippets from the answer
-                    soup = BeautifulSoup(answer.get("body", ""), "html.parser")
-                    answer_data["code_snippets"] = [code.get_text(strip=True) for code in soup.find_all("code")]
-
-                    top_answers_data.append(answer_data)
-
-                # Store final structured data
-                collected_questions.append({
-                    "title": q.get("title"),
-                    "tags": q.get("tags", []),
-                    "body": body_text,  # Fetched from scraping
-                    "code_snippets": code_snippets,  # Extracted snippets from question
-                    "explicit_error_message": re.findall(r"([A-Za-z]+Error: .*?)\n", body_text),  # Extract error messages
-                    "creation_date": q.get("creation_date"),
-                    "views": q.get("view_count"),
-                    "top_answers": top_answers_data
-                })
-
-                # Mark question as processed
-                processed_questions.add(question_id)
-
-                # Save progress every `save_every` questions
-                if len(collected_questions) % save_every == 0:
-                    print(f"💾 Saving progress at {len(collected_questions)} questions...")
-                    save_to_json(collected_questions, filename="python_errors_sample.json")
-                    save_processed_questions(list(processed_questions))
-                    print(f"✅ Data successfully saved.")
-
-                if len(collected_questions) >= num_questions:
-                    print(f"🏁 Goal reached! {num_questions} questions processed. Stopping.")
-                    break
+            if len(collected_questions) >= num_questions:
+                print(f"🏁 Goal reached! {num_questions} questions processed. Stopping.")
+                break
 
         page += 1
         print(f"🕒 Moving to next page: {page}")
@@ -328,7 +307,6 @@ def process_questions(num_questions=5000, save_every=100):
     print("✅ Final save complete.")
 
     return collected_questions
-
 
 
 def store_in_faiss(questions, model_name="BAAI/bge-base-en-v1.5", batch_size=1000):
