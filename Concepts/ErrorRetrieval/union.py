@@ -4,7 +4,7 @@ Ensure all unique values
 
 import json
 
-with open("data/pytorch_errors.json", "r", encoding="utf-8") as f1, open("data/python_errors.json", "r", encoding="utf-8") as f2:
+with open("data/union.json", "r", encoding="utf-8") as f1, open("tensorflow_errors.json", "r", encoding="utf-8") as f2:
     list1 = json.load(f1)  
     list2 = json.load(f2)
 
