@@ -7,13 +7,21 @@ from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
 import requests
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 def check_api_quota():
     """
     Checks the Stack Overflow API quota before making requests.
     """
+    
     api_url = "https://api.stackexchange.com/2.3/info"
-    params = {"site": "stackoverflow"}
+    params = {
+                "site": "stackoverflow",
+                "key": os.getenv("STACK_OVERFLOW_API_KEY"),
+            }
     
     try:
         response = requests.get(api_url, params=params, timeout=10)
