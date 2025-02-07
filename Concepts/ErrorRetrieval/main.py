@@ -13,15 +13,15 @@ from check_req import check_api_quota
 
 load_dotenv()
 
-# when quota 0 give up
+# When quota 0 give up
 flag = 0
 
-### 🔹 Safe API Request with Rate Limit Handling
 def safe_api_request(url, params, retries=5, base_wait_time=4):
     """
     Makes a request to the Stack Overflow API and retries if rate-limited (429 error).
-    Implements exponential backoff to avoid hitting the limit again.
+    Implements exponential backoff, checks quota to avoid hitting the limit again.
     """
+    global flag
     for attempt in range(retries):
         response = requests.get(url, params=params, timeout=10)
 
@@ -41,13 +41,14 @@ def safe_api_request(url, params, retries=5, base_wait_time=4):
     return None
 
 
-### 🔹 Save & Load Processed Question IDs
-def save_processed_questions(processed_questions, filename="processed_questions.json"):
-    """ Saves processed question IDs to a file to prevent duplicates. """
+def save_processed_questions(new_processed_questions, filename="processed_questions_tensorflow.json"):
+    """ Saves processed question IDs to prevent duplicates. """
+    existing = load_processed_questions()
+    combined = existing.union(new_processed_questions)  # ✅ Merge new + old processed IDs
     with open(filename, "w") as f:
-        json.dump(processed_questions, f, indent=4)
+        json.dump(list(combined), f, indent=4)
 
-def load_processed_questions(filename="processed_questions.json"):
+def load_processed_questions(filename="processed_questions_tensorflow.json"):
     """ Loads previously processed question IDs from a file. """
     try:
         with open(filename, "r") as f:
@@ -56,14 +57,15 @@ def load_processed_questions(filename="processed_questions.json"):
         return set()  # Return an empty set if file doesn't exist
 
 
-### 🔹 Fetch Stack Overflow Questions
 def fetch_questions_with_errors(page=1, pagesize=100):
     """ Fetches Stack Overflow questions while handling API rate limits. """
+    if flag == 1:
+        return []
     api_url = "https://api.stackexchange.com/2.3/search"
     params = {
         "order": "desc",
         "sort": "votes",
-        "tagged": "pytorch",
+        "tagged": "tensorflow",
         "site": "stackoverflow",
         "pagesize": pagesize,
         "page": page,
@@ -74,7 +76,6 @@ def fetch_questions_with_errors(page=1, pagesize=100):
     return safe_api_request(api_url, params) or []
 
 
-### 🔹 Check for Stack Traces
 def contains_stack_trace(text):
     """ Checks if the given text contains a Python stack trace or error messages. """
     stack_trace_pattern = r"(File \".*?\", line \d+)"
@@ -88,9 +89,10 @@ def contains_stack_trace(text):
     )
 
 
-### 🔹 Fetch Answers
 def fetch_top_answers(question_id):
     """ Fetches the top 2 highest-voted answers. """
+    if flag == 1:
+        return []
     answer_url = f"https://api.stackexchange.com/2.3/questions/{question_id}/answers"
     params = {
         "order": "desc",
@@ -104,9 +106,10 @@ def fetch_top_answers(question_id):
     return safe_api_request(answer_url, params) or []
 
 
-### 🔹 Fetch Top Comment
 def fetch_top_comment(answer_id):
     """ Fetches the top comment from an answer. """
+    if flag == 1:
+        return None
     comment_url = f"https://api.stackexchange.com/2.3/answers/{answer_id}/comments"
     params = {
         "order": "desc",
@@ -120,7 +123,6 @@ def fetch_top_comment(answer_id):
     return comments[0].get("body", "") if comments else None
 
 
-### 🔹 Scrape Stack Overflow Question Details
 def scrape_stackoverflow_details(question_url):
     """ Scrapes Stack Overflow question for details. """
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -146,14 +148,23 @@ def scrape_stackoverflow_details(question_url):
     }
 
 
-### 🔹 Save to JSON
-def save_to_json(data, filename="pytorch_errors_sample.json"):
-    """ Saves collected data to a JSON file. """
+def save_to_json(data, filename="tensorflow_errors.json"):
+    """ Appends new data to the existing JSON file instead of overwriting it. """
+    try:
+        with open(filename, "r") as f:
+            existing_data = json.load(f)  # ✅ Load existing data
+            if not isinstance(existing_data, list):
+                existing_data = []  # ✅ Ensure it's a list
+    except (FileNotFoundError, json.JSONDecodeError):
+        existing_data = []  # ✅ If file doesn't exist or is corrupted, start fresh
+
+    combined_data = existing_data + data  # ✅ Append new data
+
     with open(filename, "w") as f:
-        json.dump(data, f, indent=4)
+        json.dump(combined_data, f, indent=4)  # ✅ Save back to file
+    print(f"💾 {len(data)} new questions appended to {filename}.")
 
 
-### 🔹 Process Questions & Save Progress
 def process_questions(num_questions=5000):
     """ Fetches, filters, and processes Stack Overflow questions. Saves after every page. """
     collected_questions = []
@@ -172,6 +183,7 @@ def process_questions(num_questions=5000):
         for q in questions:
             question_id = q.get("question_id")
             if question_id in processed_questions:
+                print('Question already processed. Skipping...')
                 continue
 
             question_url = q.get("link")
@@ -219,7 +231,7 @@ def process_questions(num_questions=5000):
         save_to_json(collected_questions)
         save_processed_questions(list(processed_questions))
         print(f"✅ Page {page} data saved.")
-
+        collected_questions.clear()
         page += 1
         time.sleep(1)  # Avoid API Limits
         if flag == 1:
@@ -230,5 +242,5 @@ def process_questions(num_questions=5000):
 
 if __name__ == "__main__":
     print("🔍 Fetching and processing questions...")
-    pytorch_questions = process_questions(num_questions=5000)
+    questions = process_questions(num_questions=5000)
     print("✅ Done! Processed questions saved.")
