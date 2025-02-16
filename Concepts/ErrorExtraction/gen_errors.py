@@ -1,64 +1,88 @@
+import requests
 import json
 import time
-import sys
-import os
-import pyperclip
+import re
 
-stackoverfix_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-sys.path.append(stackoverfix_path)
+# Stack Overflow API settings
+API_URL = "https://api.stackexchange.com/2.3/search"
+HEADERS = {"User-Agent": "StackOverflow-Error-Fetcher"}
+PARAMS = {
+    "order": "desc",
+    "sort": "votes",
+    "tagged": "pytorch",
+    "intitle": "error",
+    "site": "stackoverflow",
+    "pagesize": 50,  # Fetch top 50 error-related questions
+}
 
-import stackoverfix
-from Concepts.ErrorExtraction.error_snippets import error_functions 
+# Function to fetch Stack Overflow errors
+def fetch_stackoverflow_errors():
+    print("🔍 Fetching Python errors from Stack Overflow...")
+    
+    response = requests.get(API_URL, params=PARAMS, headers=HEADERS)
+    if response.status_code != 200:
+        print(f"❌ Error fetching data: {response.status_code}")
+        return []
 
-errors_file = "errors.json"
+    data = response.json()
+    return data.get("items", [])
 
-# Ensure errors.json exists
-try:
-    with open(errors_file, "r") as f:
-        errors_list = json.load(f)
-except FileNotFoundError:
-    errors_list = []
+# Function to clean HTML tags from text
+def clean_html(raw_html):
+    """Removes HTML tags from the text"""
+    clean_text = re.sub('<.*?>', '', raw_html)
+    return clean_text.strip()
 
-# Function to trigger and capture errors
-def capture_and_append_errors():
-    for error_name, error_function in error_functions.items():
-        try:
-            error_function()  # Execute function to trigger an error
-        except Exception as e:
-            print(f"🚨 Triggered {error_name}")
+# Function to extract the first code snippet from the body
+def extract_code_snippet(body):
+    """Extracts first code snippet from Stack Overflow question body"""
+    code_matches = re.findall(r"<code>(.*?)</code>", body, re.DOTALL)
+    if code_matches:
+        return clean_html(code_matches[0])  # Return first code snippet
+    return None
 
-            # Extract structured stack trace using stackoverfix
-            stackoverfix.extract_and_copy(e)
+# Function to process errors into errors.json format
+def process_errors(questions):
+    errors_data = []
+    for idx, question in enumerate(questions):
+        error_title = question.get("title", "Unknown Error")
+        question_id = question.get("question_id", "")
+        link = question.get("link", "")
+        
+        # Fetch detailed question data (including body & code)
+        details_url = f"https://api.stackexchange.com/2.3/questions/{question_id}?site=stackoverflow&filter=withbody"
+        details_response = requests.get(details_url, headers=HEADERS)
+        details_data = details_response.json()
+        
+        if "items" in details_data and len(details_data["items"]) > 0:
+            body = details_data["items"][0].get("body", "")
+        else:
+            body = "No details available."
 
-            # Wait for clipboard update
-            time.sleep(1)
+        # Extract description and code snippet
+        description = clean_html(body[:500])  # Limit description to first 500 chars
+        code_snippet = extract_code_snippet(body)
 
-            # Retrieve JSON from clipboard
-            clipboard_content = pyperclip.paste()
+        error_entry = {
+            "exception": error_title,
+            "message": error_title,  # Using title as the general message
+            "code_snippet": code_snippet if code_snippet else "",
+            "description": description
+        }
 
-            # Parse JSON
-            try:
-                error_data = json.loads(clipboard_content)
-            except json.JSONDecodeError:
-                print(f"⚠️ Failed to parse JSON for {error_name}.")
-                continue
+        errors_data.append(error_entry)
+        time.sleep(1)  # Prevent rate limiting
 
-            # Append structured error
-            error_entry = {
-                "exception": error_data.get("exception", error_name),
-                "message": error_data.get("message", str(e)),
-                "stack_trace": error_data.get("filtered_trace", []),
-                "description": f"Triggered {error_name} by executing {error_function.__name__}()"
-            }
+        print(f"✅ Processed error {idx + 1}/{len(questions)}: {error_title}")
 
-            errors_list.append(error_entry)
-            print(f"✅ Captured {error_name}")
+    return errors_data
 
-    # Save structured errors to JSON
-    with open(errors_file, "w") as f:
-        json.dump(errors_list, f, indent=4)
+# Fetch errors and process them
+questions = fetch_stackoverflow_errors()
+errors_json = process_errors(questions)
 
-    print("📂 `errors.json` has been updated with real error stack traces.")
+# Save to errors.json
+with open("errors.json", "w") as f:
+    json.dump(errors_json, f, indent=4)
 
-# Run error capture function
-capture_and_append_errors()
+print("`errors.json` has been successfully generated!")

@@ -1,141 +1,302 @@
 [
     {
-        "exception": "ZeroDivisionError",
-        "message": "division by zero",
-        "stack_trace": [
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
-                "line": 26,
-                "function": "capture_and_append_errors",
-                "code": "error_function()  # Execute function to trigger an error"
-            },
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
-                "line": 2,
-                "function": "zero_division_error",
-                "code": "x = 1 / 0  # Division by zero"
-            }
-        ],
-        "description": "Triggered ZeroDivisionError by executing zero_division_error()"
+        "exception": "How can I fix this strange error: &quot;RuntimeError: CUDA error: out of memory&quot;?",
+        "message": "How can I fix this strange error: &quot;RuntimeError: CUDA error: out of memory&quot;?",
+        "code_snippet": "",
+        "description": "I successfully trained the network but got this error during validation:\n\nRuntimeError: CUDA error: out of memory"
     },
     {
-        "exception": "KeyError",
-        "message": "'age'",
-        "stack_trace": [
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
-                "line": 26,
-                "function": "capture_and_append_errors",
-                "code": "error_function()  # Execute function to trigger an error"
-            },
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
-                "line": 6,
-                "function": "key_error",
-                "code": "print(d[\"age\"])  # KeyError: 'age'"
-            }
-        ],
-        "description": "Triggered KeyError by executing key_error()"
+        "exception": "CUDA runtime error (59) : device-side assert triggered",
+        "message": "CUDA runtime error (59) : device-side assert triggered",
+        "code_snippet": "THCudaCheck FAIL file=/opt/conda/conda-bld/pytorch_1524584710464/work/aten/src/THC/generated/../generic/THCTensorMathPointwise.cu line=265 error=59 : device-side assert triggered\nTraceback (most recent call last):\n  File &quot;main.py&quot;, line 109, in &lt;module&gt;\n    train(loader_train, model, criterion, optimizer)\n  File &quot;main.py&quot;, line 54, in train\n    optimizer.step()\n  File &quot;/usr/local/anaconda35/lib/python3.6/site-packages/torch/optim/sgd.py&quot;, line 93, in step\n    d_p.add_(weight_decay, p.data)\nRuntimeError: cuda runtime error (59) : device-side assert triggered at /opt/conda/conda-bld/pytorch_1524584710464/work/aten/src/THC/generated/../generic/THCTensorMathPointwise.cu:265",
+        "description": "THCudaCheck FAIL file=/opt/conda/conda-bld/pytorch_1524584710464/work/aten/src/THC/generated/../generic/THCTensorMathPointwise.cu line=265 error=59 : device-side assert triggered\nTraceback (most recent call last):\n  File &quot;main.py&quot;, line 109, in &lt;module&gt;\n    train(loader_train, model, criterion, optimizer)\n  File &quot;main.py&quot;, line 54, in train\n    optimizer.step()\n  File &quot;/usr/local/anaconda35/lib/python3.6/site-packag"
     },
     {
-        "exception": "IndexError",
-        "message": "list index out of range",
-        "stack_trace": [
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
-                "line": 26,
-                "function": "capture_and_append_errors",
-                "code": "error_function()  # Execute function to trigger an error"
-            },
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
-                "line": 10,
-                "function": "index_error",
-                "code": "print(lst[5])  # IndexError"
-            }
-        ],
-        "description": "Triggered IndexError by executing index_error()"
+        "exception": "Pytorch fails with CUDA error: device-side assert triggered on Colab",
+        "message": "Pytorch fails with CUDA error: device-side assert triggered on Colab",
+        "code_snippet": "device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')\n\nt = torch.tensor([1,2], device=device)",
+        "description": "I am trying to initialize a tensor on Google Colab with GPU enabled.\ndevice = torch.device('cuda' if torch.cuda.is_available() else 'cpu')\n\nt = torch.tensor([1,2], device=device)\n\nBut I am getting this strange error.\nRuntimeError: CUDA error: device-side assert triggered\nCUDA kernel errors might be asynchronously reported at some other API call,so the stacktrace below migh"
     },
     {
-        "exception": "AttributeError",
-        "message": "'NoneType' object has no attribute 'append'",
-        "stack_trace": [
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
-                "line": 26,
-                "function": "capture_and_append_errors",
-                "code": "error_function()  # Execute function to trigger an error"
-            },
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
-                "line": 14,
-                "function": "attribute_error",
-                "code": "x.append(5)  # AttributeError"
-            }
-        ],
-        "description": "Triggered AttributeError by executing attribute_error()"
+        "exception": "CUDA initialization: CUDA unknown error - this may be due to an incorrectly set up environment",
+        "message": "CUDA initialization: CUDA unknown error - this may be due to an incorrectly set up environment",
+        "code_snippet": "collect_env.py",
+        "description": "I am trying to install torch with CUDA support.\nHere is the result of my collect_env.py script:\nPyTorch version: 1.7.1+cu101\nIs debug build: False\nCUDA used to build PyTorch: 10.1\nROCM used to build PyTorch: N/A\n\nOS: Ubuntu 20.04.1 LTS (x86_64)\nGCC version: (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0\nClang version: Could not collect\nCMake version: Could not collect\n\nPython version: 3.9 (64-bit runtime)\nIs CUDA available: False\nCUDA runtime version: 10.1.243\nGPU mod"
     },
     {
-        "exception": "TypeError",
-        "message": "unsupported operand type(s) for +: 'int' and 'str'",
-        "stack_trace": [
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
-                "line": 26,
-                "function": "capture_and_append_errors",
-                "code": "error_function()  # Execute function to trigger an error"
-            },
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
-                "line": 17,
-                "function": "type_error",
-                "code": "x = 5 + \"hello\"  # TypeError"
-            }
-        ],
-        "description": "Triggered TypeError by executing type_error()"
+        "exception": "CUDA initialization: Unexpected error from cudaGetDeviceCount()",
+        "message": "CUDA initialization: Unexpected error from cudaGetDeviceCount()",
+        "code_snippet": "UserWarning: CUDA initialization: Unexpected error from cudaGetDeviceCount(). Did you run some cuda functions before calling NumCudaDevices() that might have already set an error? Error 804: forward compatibility was attempted on non supported HW (Triggered internally at  /opt/conda/conda-bld/pytorch_1603729096996/work/c10/cuda/CUDAFunctions.cpp:100.)",
+        "description": "I was running a deep learning program on my Linux server and I suddenly got this error.\nUserWarning: CUDA initialization: Unexpected error from cudaGetDeviceCount(). Did you run some cuda functions before calling NumCudaDevices() that might have already set an error? Error 804: forward compatibility was attempted on non supported HW (Triggered internally at  /opt/conda/conda-bld/pytorch_1603729096996/work/c10/cuda/CUDAFunctions.cpp:100.)\nEarlier when I just created"
     },
     {
-        "exception": "RecursionError",
-        "message": "maximum recursion depth exceeded",
-        "stack_trace": [
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
-                "line": 26,
-                "function": "capture_and_append_errors",
-                "code": "error_function()  # Execute function to trigger an error"
-            },
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
-                "line": 22,
-                "function": "recursion_error",
-                "code": "recurse()"
-            },
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
-                "line": 21,
-                "function": "recurse",
-                "code": "recurse()  # Exceed recursion limit"
-            }
-        ],
-        "description": "Triggered RecursionError by executing recursion_error()"
+        "exception": "CUDA error: CUBLAS_STATUS_ALLOC_FAILED when calling cublasCreate(handle)",
+        "message": "CUDA error: CUBLAS_STATUS_ALLOC_FAILED when calling cublasCreate(handle)",
+        "code_snippet": "/usr/local/lib/python3.6/dist-packages/torch/nn/functional.py in linear(input, weight, bias)\n   1370         ret = torch.addmm(bias, input, weight.t())\n   1371     else:\n-&gt; 1372         output = input.matmul(weight.t())\n   1373         if bias is not None:\n   1374             output += bias\n\nRuntimeError: CUDA error: CUBLAS_STATUS_ALLOC_FAILED when calling `cublasCreate(handle)`",
+        "description": "I got the following error when I ran my PyTorch deep learning model in Google Colab\n/usr/local/lib/python3.6/dist-packages/torch/nn/functional.py in linear(input, weight, bias)\n   1370         ret = torch.addmm(bias, input, weight.t())\n   1371     else:\n-&gt; 1372         output = input.matmul(weight.t())\n   1373         if bias is not None:\n   1374             output += bias\n\nRuntimeError: CUDA error: CUBLAS_STATUS_ALLOC_FAILED when calling `cublasCreate(handle)`"
     },
     {
-        "exception": "ValueError",
-        "message": "expected sequence of length 3 at dim 1 (got 2)",
-        "stack_trace": [
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
-                "line": 26,
-                "function": "capture_and_append_errors",
-                "code": "error_function()  # Execute function to trigger an error"
-            },
-            {
-                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
-                "line": 38,
-                "function": "pytorch_invalid_shape",
-                "code": "a = torch.tensor([[1, 2, 3], [4, 5]])  # ValueError"
-            }
-        ],
-        "description": "Triggered ValueError (PyTorch) by executing pytorch_invalid_shape()"
+        "exception": "400% higher error with PyTorch compared with identical Keras model (with Adam optimizer)",
+        "message": "400% higher error with PyTorch compared with identical Keras model (with Adam optimizer)",
+        "code_snippet": "y = sin(X1) + sin(X2) + ... sin(X10)",
+        "description": "TLDR:\nA simple (single hidden-layer) feed-forward Pytorch model trained to predict the function y = sin(X1) + sin(X2) + ... sin(X10) substantially underperforms an identical model built/trained with Keras. Why is this so and what can be done to mitigate the difference in performance?\n\nIn training a regression model, I noticed that PyTorch drastically underperforms an identical model built with Keras.\nThis phenome"
+    },
+    {
+        "exception": "PyTorch : error message &quot;torch has no [...] member&quot;",
+        "message": "PyTorch : error message &quot;torch has no [...] member&quot;",
+        "code_snippet": "from __future__ import print_function\nimport torch\n\nprint (torch.__version__)\n\nx = x = torch.rand(5, 3)\nprint(x)",
+        "description": "Good evening,\nI have just installed PyTorch 0.4.0 and I'm trying to carry out the first tutorial \"What is PyTorch?\"\nI have written a Tutorial.py file which I try to execute with Visual Studio Code\n\nHere is the code :\n\nfrom __future__ import print_function\nimport torch\n\nprint (torch.__version__)\n\nx = x = torch.rand(5, 3)\nprint(x)\n\n\nUnfortunately, when I try to debug it, i have an error message :\n\"torch has no rand member\"\n\nThis is true with any memb"
+    },
+    {
+        "exception": "how does one fix when torch can&#39;t find cuda, error: version libcublasLt.so.11 not defined in file libcublasLt.so.11 with link time reference?",
+        "message": "how does one fix when torch can&#39;t find cuda, error: version libcublasLt.so.11 not defined in file libcublasLt.so.11 with link time reference?",
+        "code_snippet": "python -c &quot;import torch&quot;",
+        "description": "I get this error with a pytorch import python -c &quot;import torch&quot;:\nTraceback (most recent call last):\n  File &quot;&lt;string&gt;&quot;, line 1, in &lt;module&gt;\n  File &quot;/afs/cs.stanford.edu/u/brando9/ultimate-utils/ultimate-utils-proj-src/uutils/__init__.py&quot;, line 13, in &lt;module&gt;\n    import torch\n  File &quot;/dfs/scratch0/brando9/miniconda/envs/metalearning_gpu/lib/python3.9/site-packages/torch/__init__.py&quot;, line 191, in &lt;module&g"
+    },
+    {
+        "exception": "pytorch: &quot;multi-target not supported&quot; error message",
+        "message": "pytorch: &quot;multi-target not supported&quot; error message",
+        "code_snippet": "(3, 50, 50)",
+        "description": "So I want to classify some (3, 50, 50) pictures. First I loaded the dataset from the file without a dataloader or batches, it worked. Now, after adding both things I get that error:\nRuntimeError: multi-target not supported at /pytorch/aten/src/THCUNN/generic/ClassNLLCriterion.cu:15\n\nI found a lot of answers in the internet, mostly to use target.squeeze(1) but it doesn\u00b4t work for me.\nMy target-batch looks like following:\nt"
+    },
+    {
+        "exception": "RuntimeError: cuDNN error: CUDNN_STATUS_NOT_INITIALIZED using pytorch",
+        "message": "RuntimeError: cuDNN error: CUDNN_STATUS_NOT_INITIALIZED using pytorch",
+        "code_snippet": "Traceback (most recent call last):\n  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;\n  File &quot;/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py&quot;, line 889, in _call_impl\n    result = self.forward(*input, **kwargs)\n  File &quot;/usr/local/lib/python3.6/dist-packages/torch/nn/modules/conv.py&quot;, line 263, in forward\n    return self._conv_forward(input, self.weight, self.bias)\n  File &quot;/usr/local/lib/python3.6/dist-packages/torch/nn/modules/conv.py&quot;, line 260, in _conv_forward\n    self.padding, self.dilation, self.groups)\nRuntimeError: cuDNN error: CUDNN_STATUS_NOT_INITIALIZED",
+        "description": "I am trying to run a simple pytorch sample code. It's works fine using CPU. But when using GPU, i get this error message:\nTraceback (most recent call last):\n  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;\n  File &quot;/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py&quot;, line 889, in _call_impl\n    result = self.forward(*input, **kwargs)\n  File &quot;/usr/local/lib/python3.6/dist-packages/torch/nn/modules/conv.py&quot;, line 263, in forward\n    re"
+    },
+    {
+        "exception": "Despite installing the torch vision pytorch library, I am getting an error saying that there is no module named torch vision",
+        "message": "Despite installing the torch vision pytorch library, I am getting an error saying that there is no module named torch vision",
+        "code_snippet": "import torchvision",
+        "description": "The error that I am getting when I use import torchvision is this:\n\nError Message\n\n\"*Traceback (most recent call last):\n  File \"/Users/gokulsrin/Desktop/torch_basics/data.py\", line 4, in &lt;module&gt;\n    import torchvision\nModuleNotFoundError: No module named 'torchvision'*\"\n\n\nI don't know what to do. I have tried changing the version of python from the native one to the one downloaded through anaconda. I am using anaconda"
+    },
+    {
+        "exception": "Pytorch tensor, how to switch channel position - Runtime error",
+        "message": "Pytorch tensor, how to switch channel position - Runtime error",
+        "code_snippet": "X_train=torch.from_numpy(X_data)\ny_train=torch.from_numpy(y_data)\ntraining_dataset = torch.utils.data.TensorDataset(X_train, y_train)\ntrain_loader = torch.utils.data.DataLoader(training_dataset, batch_size=50, shuffle=False)",
+        "description": "I have my training dataset as below, where X_train is 3D with 3 channels\n\nShape of X_Train:  (708, 256, 3)\nShape of Y_Train:  (708, 4)\n\nThen I convert them into a tensor and input into the dataloader:\n\nX_train=torch.from_numpy(X_data)\ny_train=torch.from_numpy(y_data)\ntraining_dataset = torch.utils.data.TensorDataset(X_train, y_train)\ntrain_loader = torch.utils.data.DataLoader(training_dataset, batch_size=50, shuffle=False)\n\n\nHowever when training t"
+    },
+    {
+        "exception": "How to solve &quot;RuntimeError: CUDA error: invalid device ordinal&quot;?",
+        "message": "How to solve &quot;RuntimeError: CUDA error: invalid device ordinal&quot;?",
+        "code_snippet": "import cv2\nfrom facial_emotion_recognition import EmotionRecognition\n\nemotion_detector = EmotionRecognition(device='gpu', gpu_id=1)\ncamera = cv2.VideoCapture(0)\n\nwhile True:\n    image = camera.read()[1]\n    image = emotion_detector.recognise_emotion(image, return_type='BGR')\n    cv2.imshow('Camera', image)\n\n    key = cv2.waitKey(1)\n    if key == 27:\n        break\n\ncamera.release()\ncv2.destroyAllWindows()",
+        "description": "I'm trying to run this code. I don't know what is wrong with it, but this code is not running. and I don't know how to solve this problem.\nimport cv2\nfrom facial_emotion_recognition import EmotionRecognition\n\nemotion_detector = EmotionRecognition(device='gpu', gpu_id=1)\ncamera = cv2.VideoCapture(0)\n\nwhile True:\n    image = camera.read()[1]\n    image = emotion_detector.recognise_emotion(image, return_type='BGR')\n    cv2.imshow('Camera', image)\n\n    key = cv2.waitKey(1)\n    if ke"
+    },
+    {
+        "exception": "RuntimeError: CUDA error: CUBLAS_STATUS_EXECUTION_FAILED when calling `cublasSgemm( handle)` with GPU only",
+        "message": "RuntimeError: CUDA error: CUBLAS_STATUS_EXECUTION_FAILED when calling `cublasSgemm( handle)` with GPU only",
+        "code_snippet": "os.environ['CUDA_LAUNCH_BLOCKING'] = &quot;1&quot;",
+        "description": "I'm working on the CNN with one-dimensional signal. It works totally fine with CPU device. However, when I training model in GPU, CUDA error occurred. I set os.environ['CUDA_LAUNCH_BLOCKING'] = &quot;1&quot; command after I got RuntimeError: CUDA error: CUBLAS_STATUS_ALLOC_FAILED when calling cublasCreate(handle). With doing this, a cublasSgemm error occurred instead of cublasCreate error.\nThough the nvidia document doubt the ha"
+    },
+    {
+        "exception": "What&#39;s the reason of the error ValueError: Expected more than 1 value per channel?",
+        "message": "What&#39;s the reason of the error ValueError: Expected more than 1 value per channel?",
+        "code_snippet": "test",
+        "description": "reference fast.ai\n\ngithub repository of fast.ai\n(as the code elevates the library which is built on top of PyTorch)\n\n\n  Please scroll the discussion a bit\n\n\nI am running the following code, and get an error while trying to pass the data to"
+    },
+    {
+        "exception": "How to solve the famous `unhandled cuda error, NCCL version 2.7.8` error?",
+        "message": "How to solve the famous `unhandled cuda error, NCCL version 2.7.8` error?",
+        "code_snippet": "RuntimeError: NCCL error in: /opt/conda/conda-bld/pytorch_1614378083779/work/torch/lib/c10d/ProcessGroupNCCL.cpp:825, unhandled cuda error, NCCL version 2.7.8\nncclUnhandledCudaError: Call to CUDA function failed.",
+        "description": "I've seen multiple issue about the:\nRuntimeError: NCCL error in: /opt/conda/conda-bld/pytorch_1614378083779/work/torch/lib/c10d/ProcessGroupNCCL.cpp:825, unhandled cuda error, NCCL version 2.7.8\nncclUnhandledCudaError: Call to CUDA function failed.\n\nbut none seem to fix it for me:\n\nhttps://github.com/pytorch/pytorch/issues/54550\n<a href=\"https://github.com/pytorch"
+    },
+    {
+        "exception": "PyTorch - Getting the &#39;TypeError: pic should be PIL Image or ndarray. Got &lt;class &#39;numpy.ndarray&#39;&gt;&#39; error",
+        "message": "PyTorch - Getting the &#39;TypeError: pic should be PIL Image or ndarray. Got &lt;class &#39;numpy.ndarray&#39;&gt;&#39; error",
+        "code_snippet": "TypeError: pic should be PIL Image or ndarray. Got &lt;class 'numpy.ndarray'&gt;",
+        "description": "I am getting the error TypeError: pic should be PIL Image or ndarray. Got &lt;class 'numpy.ndarray'&gt; when I try to load a non-image dataset through the DataLoader. The versions of torch and torchvision are 1.0.1, and 0.2.2.post3, respectively. Python's version is 3.7.1 on a Windows 10 machine.\n\nHere is the code:\n\nclass AndroDataset(Dataset):\n    def"
+    },
+    {
+        "exception": "PyTorch Error loading &quot;\\lib\\site-packages\\torch\\lib\\shm.dll&quot; or one of its dependencies",
+        "message": "PyTorch Error loading &quot;\\lib\\site-packages\\torch\\lib\\shm.dll&quot; or one of its dependencies",
+        "code_snippet": "PyTorch Error loading  &quot;\\lib\\site-packages\\torch\\lib\\shm.dll&quot; or one of its dependencies.",
+        "description": "I cannot use PyTorch and Shap getting this error\nPyTorch Error loading  &quot;\\lib\\site-packages\\torch\\lib\\shm.dll&quot; or one of its dependencies.\n\nI have tried\n\nto uninstall and re-install PyTorch, failed\ncreate a new conda environment and reinstalled everything including PyTorch, failed\nto install .NET C++ as suggested in other posts, but it was already installed\n\nI am not an expert on SO and dependencies, but i fin"
+    },
+    {
+        "exception": "PyTorch Model Training: RuntimeError: cuDNN error: CUDNN_STATUS_INTERNAL_ERROR",
+        "message": "PyTorch Model Training: RuntimeError: cuDNN error: CUDNN_STATUS_INTERNAL_ERROR",
+        "code_snippet": "nn.LSTM",
+        "description": "After training a PyTorch model on a GPU for several hours, the program fails with the error\n\n\n  RuntimeError: cuDNN error: CUDNN_STATUS_INTERNAL_ERROR\n\n\nTraining Conditions\n\n\nNeural Network: PyTorch 4-layer nn.LSTM with nn.Linear output\nDeep Q Network Agent (Vanilla DQN with Replay Memory)\nstate passed into forward() has the shape (32, 20, 15),"
+    },
+    {
+        "exception": "How to solve the run time error &quot;Only Tensors created explicitly by the user (graph leaves) support the deepcopy protocol at the moment&quot;",
+        "message": "How to solve the run time error &quot;Only Tensors created explicitly by the user (graph leaves) support the deepcopy protocol at the moment&quot;",
+        "code_snippet": "output = model(SOC[13])\n\n# Three output values of NN\nRs=output[0]\nR1=output[1]\nC1=output[2]\n\n# Using these variables in another function\n\nnum1=[Rs*R1*C1,R1+Rs]\nden1=[C1*R1,1]\nG = control.tf(num,den)",
+        "description": "I want to use output variables of NN as an input in another function,but met with error like this 'Only Tensors created explicitly by the user (graph leaves) support the deepcopy protocol at the moment'.The out variables require gradient. \n\nI tried by changing the output variables to numpy values, but in that case the back propagataion does not work because it see numpy values as variables which does not need gradient.\n\noutput = model(SOC[13])\n\n# Three output values of N"
+    },
+    {
+        "exception": "PyTorch&#39;s dataloader &quot;too many open files&quot; error when no files should be open",
+        "message": "PyTorch&#39;s dataloader &quot;too many open files&quot; error when no files should be open",
+        "code_snippet": "class IceShipDataset(Dataset):\n    BAND1='band_1'\n    BAND2='band_2'\n    IMAGE='image'\n\n    @staticmethod\n    def get_band_img(sample,band):\n        pic_size=75\n        img=np.array(sample[band])\n        img.resize(pic_size,pic_size)\n        return img\n\n    def __init__(self,data,transform=None):\n        self.data=data\n        self.transform=transform\n\n    def __len__(self):\n        return len(self.data)  \n\n    def __getitem__(self, idx):\n\n        sample=self.data[idx]\n        band1_img=IceShipDataset.get_band_img(sample,self.BAND1)\n        band2_img=IceShipDataset.get_band_img(sample,self.BAND2)\n        img=np.stack([band1_img,band2_img],2)\n        sample[self.IMAGE]=img\n        if self.transform is not None:\n                sample=self.transform(sample)\n        return sample",
+        "description": "So this is a minimal code which illustrates the issue:\n\nThis is the Dataset:\n\nclass IceShipDataset(Dataset):\n    BAND1='band_1'\n    BAND2='band_2'\n    IMAGE='image'\n\n    @staticmethod\n    def get_band_img(sample,band):\n        pic_size=75\n        img=np.array(sample[band])\n        img.resize(pic_size,pic_size)\n        return img\n\n    def __init__(self,data,transform=None):\n        self.data=data\n        self.transform=transform\n\n    def __len__(self):\n        return len("
+    },
+    {
+        "exception": "What does &quot;RuntimeError: CUDA error: device-side assert triggered&quot; in PyTorch mean?",
+        "message": "What does &quot;RuntimeError: CUDA error: device-side assert triggered&quot; in PyTorch mean?",
+        "code_snippet": "RuntimeError: CUDA error: device-side assert triggered",
+        "description": "I have seen a lot of specific posts to particular case-specific problems, but no fundamental motivating explanation. What does this error:\n\nRuntimeError: CUDA error: device-side assert triggered\n\n\nmean? Specifically, what is the assert that is being triggered, why is the assert there, and how do we work backwards to debug the problem?\n\nAs-is, this error message is near useless in diagnosing any problem because of the generality that it seems to say \"some"
+    },
+    {
+        "exception": "PyTorch CUDA error: an illegal memory access was encountered",
+        "message": "PyTorch CUDA error: an illegal memory access was encountered",
+        "code_snippet": "cuda.set_device()",
+        "description": "Relatively new to using CUDA. I keep getting the following error after a seemingly random period of time:\nRuntimeError: CUDA error: an illegal memory access was encountered\nI have seen people suggest things such as using cuda.set_device() rather than cuda.device(), setting torch.backends.cudnn.benchmark = False\nbut I can't seem to get the error to go away. Here are some pieces of my code:\ntorch.cuda.set_device(torch.device('cuda:0'))<"
+    },
+    {
+        "exception": "Python: BERT Error - Some weights of the model checkpoint at were not used when initializing BertModel",
+        "message": "Python: BERT Error - Some weights of the model checkpoint at were not used when initializing BertModel",
+        "code_snippet": "bert-base-uncased",
+        "description": "I am creating an entity extraction model in PyTorch using bert-base-uncased but when I try to run the model I get this error:\nSome weights of the model checkpoint at D:\\Transformers\\bert-entity-extraction\\input\\bert-base-uncased_L-12_H-768_A-12 were not used when initializing BertModel:    \n['cls.predictions.transform.dense.bias', 'cls.predictions.decoder.weight', 'cls.seq_relationship.weight',   'cls.predictions.transform.LayerNorm.bias', 'cls.seq_relationship.bia"
+    },
+    {
+        "exception": "pytorch error: multi-target not supported in CrossEntropyLoss()",
+        "message": "pytorch error: multi-target not supported in CrossEntropyLoss()",
+        "code_snippet": "CrossEntropyLoss",
+        "description": "I am on a project using acceleration data to predict some activities. \nBut I have problems on the loss calculation. I am using CrossEntropyLoss for it.\n\nData is used for it like below\nI use the first 4 data of each rows to predict the index like the last one of each rows.\n\n1 84 84 81 4\n81 85 85 80 1\n81 82 84 80 1\n1 85 84 2 0\n81 85 82 80 1\n81 82 84 80 1\n81 25 84 80 5\n\n\nThe error messages are like below. \n\nminoh@minoh-VirtualBox:"
+    },
+    {
+        "exception": "RuntimeError: Error(s) in loading state_dict for ResNet:",
+        "message": "RuntimeError: Error(s) in loading state_dict for ResNet:",
+        "code_snippet": "def load_model(checkpoint_path):\n  '''\n  Function that loads a checkpoint and rebuilds the model\n  '''\n\n  checkpoint = torch.load(checkpoint_path, map_location = 'cpu')\n\n  if checkpoint['architecture'] == 'resnet18':\n    model = models.resnet18(pretrained=True)\n\n  # Freezing the parameters\n    for param in model.parameters():\n        param.requires_grad = False\n\n\n  else:\n    print('Wrong Architecture!')\n    return None\n\n  model.class_to_idx = checkpoint['class_to_idx']\n\n  classifier = nn.Sequential(OrderedDict([\n                            ('fc1', nn.Linear(512, 1024)),\n                            ('relu1', nn.ReLU()),\n                            ('dropout', nn.Dropout(0.2)),\n                            ('fc2', nn.Linear(1024, 102))\n                            ]))\n\n\n  model.fc = classifier\n\n  model.load_state_dict(checkpoint['state_dict'])\n\n  return model",
+        "description": "I am loading my model using the following code.\n\ndef load_model(checkpoint_path):\n  '''\n  Function that loads a checkpoint and rebuilds the model\n  '''\n\n  checkpoint = torch.load(checkpoint_path, map_location = 'cpu')\n\n  if checkpoint['architecture'] == 'resnet18':\n    model = models.resnet18(pretrained=True)\n\n  # Freezing the parameters\n    for param in model.parameters():\n        param.requires_grad = False\n\n\n  else:\n    print('Wrong Architecture!')\n    return None\n\n  model.c"
+    },
+    {
+        "exception": "CNN Pytorch Error : Input type (torch.cuda.ByteTensor) and weight type (torch.cuda.FloatTensor) should be the same",
+        "message": "CNN Pytorch Error : Input type (torch.cuda.ByteTensor) and weight type (torch.cuda.FloatTensor) should be the same",
+        "code_snippet": "device    = torch.device('cuda:0')\n\ntrainData = torchvision.datasets.FashionMNIST('/content/', train=True, transform=None, target_transform=None, download=True)\ntestData  = torchvision.datasets.FashionMNIST('/content/', train=False, transform=None, target_transform=None, download=True)\n\nclass Net(nn.Module):\n  def __init__(self):\n    super().__init__()\n\n    '''\n    Network Structure:\n\n    input &gt; \n    (1)Conv2D &gt; (2)MaxPool2D &gt; \n    (3)Conv2D &gt; (4)MaxPool2D &gt; \n    (5)Conv2D &gt; (6)MaxPool2D &gt; \n    (7)Linear &gt; (8)LinearOut\n\n    '''\n\n    # Creating the convulutional Layers\n    self.conv1 = nn.Conv2d(in_channels=CHANNELS, out_channels=32, kernel_size=3)\n    self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3)\n    self.conv3 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3)\n\n    self.flatten = None\n    # Creating a Random dummy sample to get the Flattened Dimensions\n    x = torch.randn(CHANNELS, DIM, DIM).view(-1, CHANNELS, DIM, DIM)\n    x = self.convs(x)\n\n    # Creating the Linear Layers\n    self.fc1   = nn.Linear(self.flatten, 512)\n    self.fc2   = nn.Linear(512, CLASSES)\n\n  def convs(self, x):\n\n    # Creating the MaxPooling Layers\n    x = F.max_pool2d(F.relu(self.conv1(x)), kernel_size=(2, 2))\n    x = F.max_pool2d(F.relu(self.conv2(x)), kernel_size=(2, 2))\n    x = F.max_pool2d(F.relu(self.conv3(x)), kernel_size=(2, 2))\n\n    if not self.flatten:\n      self.flatten = x[0].shape[0] * x[0].shape[1] * x[0].shape[2]\n    return x\n\n  # FORWARD PASS\n  def forward(self, x):\n    x = self.convs(x)\n    x = x.view(-1, self.flatten)\n    sm = F.relu(self.fc1(x))\n    x = F.softmax(self.fc2(sm), dim=1)\n    return x, sm\n\n\n  x_train, y_train = training_set\n  x_train, y_train = x_train.to(device), y_train.to(device)\n  optimizer = optim.Adam(net.parameters(), lr=LEARNING_RATE)\n  loss_func = nn.MSELoss()\n  loss_log  = []\n\n  for epoch in range(EPOCHS):\n    for i in tqdm(range(0, len(x_train), BATCH_SIZE)):\n        x_batch = x_train[i:i+BATCH_SIZE].view(-1, CHANNELS, DIM, DIM).to(device)\n        y_batch = y_train[i:i+BATCH_SIZE].to(device)\n\n        net.zero_grad()\n        output, sm = net(x_batch)\n        loss = loss_func(output, y_batch.float())\n        loss.backward()\n        optimizer.step()\n    loss_log.append(loss)\n    # print(f\"Epoch : {epoch} || Loss : {loss}\")\n\n  return loss_log\n\n\ntrain_set = (trainData.train_data, trainData.train_labels)\ntest_set  = (testData.test_data, testData.test_labels)\n\nEPOCHS        = 5\nLEARNING_RATE = 0.001\nBATCH_SIZE    = 32\n\nnet = Net().to(device)\n\nloss_log = train(net, train_set, EPOCHS, LEARNING_RATE, BATCH_SIZE)",
+        "description": "I'm receiving the error,\n\n\n  Input type (torch.cuda.ByteTensor) and weight type (torch.cuda.FloatTensor) should be the same\n\n\nFollowing is my code,\n\ndevice    = torch.device('cuda:0')\n\ntrainData = torchvision.datasets.FashionMNIST('/content/', train=True, transform=None, target_transform=None, download=True)\ntestData  = torchvision.datasets.FashionMNIST('/content/', train=False, transform=None, target_transform=None, download=True)\n\nclass"
+    },
+    {
+        "exception": "With BERT Text Classification, ValueError: too many dimensions &#39;str&#39; error occuring",
+        "message": "With BERT Text Classification, ValueError: too many dimensions &#39;str&#39; error occuring",
+        "code_snippet": "ValueError : too many dimensions 'str'",
+        "description": "Trying to make a classifier for sentiments of texts with BERT model but getting ValueError : too many dimensions 'str'\nThat is the DataFrame for values of train data so they are train_labels:\n0   notr\n1   notr\n2   notr\n3   negative\n4   notr\n... ...\n854 positive\n855 notr\n856 notr\n857 notr\n858 positive\n\nand there is the code which is producing the error for:\ntrain_seq = torch.tensor(tokens_train['input_ids'])\ntrain_mask = torch.t"
+    },
+    {
+        "exception": "Pytorch &quot;NCCL error&quot;: unhandled system error, NCCL version 2.4.8&quot;",
+        "message": "Pytorch &quot;NCCL error&quot;: unhandled system error, NCCL version 2.4.8&quot;",
+        "code_snippet": "python train_net.py  --config-file configs/InstanceSegmentation/pointrend_rcnn_R_50_FPN_1x_coco.yaml  --num-gpu 2  --num-machines 2 --machine-rank 0 --dist-url tcp://192.168.**.***:8000",
+        "description": "I use pytorch to distributed training my model.I have two nodes and two gpu for each node, and I run the code for one node:\npython train_net.py  --config-file configs/InstanceSegmentation/pointrend_rcnn_R_50_FPN_1x_coco.yaml  --num-gpu 2  --num-machines 2 --machine-rank 0 --dist-url tcp://192.168.**.***:8000\n\nand the other:\npython train_net.py  --config-file configs/InstanceSegmentation/pointrend_rcnn_R_50_FPN_1x_coco.yaml  --num-gpu 2  --num-mach"
+    },
+    {
+        "exception": "PyTorch multiprocessing error with Hogwild",
+        "message": "PyTorch multiprocessing error with Hogwild",
+        "code_snippet": "RuntimeError: Unable to handle autograd's threading in combination with fork-based multiprocessing. See https://github.com/pytorch/pytorch/wiki/Autograd-and-Fork",
+        "description": "I've encountered a mysterious bug while trying to implement Hogwild with torch.multiprocessing. In particular, one version of the code runs fine, but when I add in a seemingly unrelated bit of code before the multiprocessing step, this somehow causes an error during the multiprocessing step: RuntimeError: Unable to handle autograd's threading in combination with fork-based multiprocessing. See https://github.com/pytorch/pytorch/wiki/Autograd-and-Fork\nI reproduced the error"
+    },
+    {
+        "exception": "ValueError: Error initializing torch.distributed using env:// rendezvous: environment variable MASTER_ADDR expected, but not set",
+        "message": "ValueError: Error initializing torch.distributed using env:// rendezvous: environment variable MASTER_ADDR expected, but not set",
+        "code_snippet": "import torch\nimport datetime\n\ntorch.distributed.init_process_group(\n    backend='nccl',\n    init_method='env://',\n    timeout=datetime.timedelta(0, 1800),\n    world_size=0,\n    rank=0,\n    store=None,\n    group_name=''\n)",
+        "description": "I am not able to initialize the group process in PyTorch for BERT model\nI had tried to initialize using following code:\n\nimport torch\nimport datetime\n\ntorch.distributed.init_process_group(\n    backend='nccl',\n    init_method='env://',\n    timeout=datetime.timedelta(0, 1800),\n    world_size=0,\n    rank=0,\n    store=None,\n    group_name=''\n)\n\n\nand tried to access the get_world_size() function:\n\nnum_t"
+    },
+    {
+        "exception": "Error while installing PyTorch using pip - cannot build wheel",
+        "message": "Error while installing PyTorch using pip - cannot build wheel",
+        "code_snippet": "pip3 install pytorch",
+        "description": "I get the following output when I try to run pip3 install pytorch or pip install pytorch\nCollecting pytorch\n  Using cached pytorch-1.0.2.tar.gz (689 bytes)\nBuilding wheels for collected packages: pytorch\n  Building wheel for pytorch (setup.py) ... error\n  ERROR: Command errored out with exit status 1:\n   command: /home/chaitanya/anaconda3/bin/python -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '&quot;'&quot;'/tmp/pip-install-3v4wd97t/pytorch/"
+    },
+    {
+        "exception": "Pytorch CUDA error: no kernel image is available for execution on the device on RTX 3090 with cuda 11.1",
+        "message": "Pytorch CUDA error: no kernel image is available for execution on the device on RTX 3090 with cuda 11.1",
+        "code_snippet": "import torch\nimport sys\nprint('A', sys.version)\nprint('B', torch.__version__)\nprint('C', torch.cuda.is_available())\nprint('D', torch.backends.cudnn.enabled)\ndevice = torch.device('cuda')\nprint('E', torch.cuda.get_device_properties(device))\nprint('F', torch.tensor([1.0, 2.0]).cuda())",
+        "description": "If I run the following:\nimport torch\nimport sys\nprint('A', sys.version)\nprint('B', torch.__version__)\nprint('C', torch.cuda.is_available())\nprint('D', torch.backends.cudnn.enabled)\ndevice = torch.device('cuda')\nprint('E', torch.cuda.get_device_properties(device))\nprint('F', torch.tensor([1.0, 2.0]).cuda())\n\nI get this:\nA 3.7.5 (default, Nov  7 2019, 10:50:52) \n[GCC 8.3.0]\nB 1.8.0.dev20210115+cu110\nC True\nD True\nE _CudaDeviceProperties(name='GeForc"
+    },
+    {
+        "exception": "FBGEMM load error trying to use PyTorch on Windows",
+        "message": "FBGEMM load error trying to use PyTorch on Windows",
+        "code_snippet": "nvidia-smi",
+        "description": "I'm working on a code that uses Whisper, and I need PyTorch with CUDA to improve the speed of the model execution, I have CUDA installed (verified using nvidia-smi command where it shows that I have CUDA 12.6) and I installed PyTorch using the command pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121, but when I try to import torch in Python (import torch) I get the error:\n\nOSError: [WinError 1"
+    },
+    {
+        "exception": "How to resolve runtime error due to size mismatch in PyTorch?",
+        "message": "How to resolve runtime error due to size mismatch in PyTorch?",
+        "code_snippet": "PyTorch",
+        "description": "I am trying to implement a simple autoencoder using PyTorch. My dataset consists of 256 x 256 x 3 images. I have built a torch.utils.data.dataloader.DataLoader object which has the image stored as tensor. When I run the autoencoder, I get a runtime error:\n\n\n  size mismatch, m1: [76800 x 256], m2: [784 x 128] at\n  /Users/soumith/minicondabuild3/conda-bld/pytorch_1518371252923/work/torch/lib/TH/generic/THTensorMath.c:1434\n\n\nThese"
+    },
+    {
+        "exception": "PyTorch: Add validation error in training",
+        "message": "PyTorch: Add validation error in training",
+        "code_snippet": "import torch\nfrom torch.autograd import Variable\nimport torch.nn as nn\nimport torch.nn.functional as F\nimport torch.nn.init as I\n\n\n    class Net(nn.Module):\n\n        def __init__(self):\n            super(Net, self).__init__()\n\n            self.conv1 = nn.Conv2d(1, 32, 5)\n            self.pool = nn.MaxPool2d(2,2)\n            self.conv1_bn = nn.BatchNorm2d(32)\n            self.conv2 = nn.Conv2d(32, 64, 5)\n            self.conv2_drop = nn.Dropout2d()\n            self.conv2_bn = nn.BatchNorm2d(64)\n            self.fc1 = torch.nn.Linear(53*53*64, 256)\n            self.fc2 = nn.Linear(256, 136)\n\n\n        def forward(self, x):\n\n            x = F.relu(self.conv1_bn(self.pool(self.conv1(x))))\n            x = F.relu(self.conv2_bn(self.pool(self.conv2_drop(self.conv2(x)))))\n            x = x.view(-1, 53*53*64)\n            x = F.relu(self.fc1(x))\n            x = F.dropout(x, training=self.training)\n            x = self.fc2(x)\n\n            return x",
+        "description": "I am using PyTorch to train a cnn model. Here is my Network architecture:\n\nimport torch\nfrom torch.autograd import Variable\nimport torch.nn as nn\nimport torch.nn.functional as F\nimport torch.nn.init as I\n\n\n    class Net(nn.Module):\n\n        def __init__(self):\n            super(Net, self).__init__()\n\n            self.conv1 = nn.Conv2d(1, 32, 5)\n            self.pool = nn.MaxPool2d(2,2)\n            self.conv1_bn = nn.BatchNorm2d(32)\n            self.conv2 = nn.Conv2d(32, 64, 5)"
+    },
+    {
+        "exception": "&quot;RuntimeError: Found 0 files in subfolders of &quot;.. Error about subfolder in Pytorch",
+        "message": "&quot;RuntimeError: Found 0 files in subfolders of &quot;.. Error about subfolder in Pytorch",
+        "code_snippet": "print(os.listdir('./Dataset/images/'))",
+        "description": "I'm based on Window 10, Jupyter Notebook, Pytorch 1.0, Python 3.6.x currently.\n\nAt first I confirm to the correct path of files using this code : print(os.listdir('./Dataset/images/')).\n\nand I could check that this path is correct.\n\nbut I met Error : \n\n\n  RuntimeError: Found 0 files in subfolders of: ./Dataset/images/\n  Supported extensions are: .jpg,.jpeg,.png,.ppm,.bmp,.pgm,.t"
+    },
+    {
+        "exception": "Runtime error 999 when trying to use cuda with pytorch",
+        "message": "Runtime error 999 when trying to use cuda with pytorch",
+        "code_snippet": "RuntimeError: cuda runtime error (999) : unknown error at ..\\aten\\src\\THC\\THCGeneral.cpp:50",
+        "description": "I installed Cuda 10.1 and the latest Nvidia Driver for my Geforce 2080 ti. I try to run a basic script to test if pytorch is working and I get the following error: \n\nRuntimeError: cuda runtime error (999) : unknown error at ..\\aten\\src\\THC\\THCGeneral.cpp:50\n\nBelow is the code im trying to run:\n\nimport torch\ntorch.cuda.current_device()\ntorch.cuda.is_available()\ntorch.cuda.get_device_name(0)"
+    },
+    {
+        "exception": "Error: Some NCCL operations have failed or timed out",
+        "message": "Error: Some NCCL operations have failed or timed out",
+        "code_snippet": "[E ProcessGroupNCCL.cpp:630] [Rank 3] Watchdog caught collective operation timeout: WorkNCCL(OpType=BROADCAST, Timeout(ms)=1800000) ran for 1803710 milliseconds before timing out.       \n                                                                                                                                                        [E ProcessGroupNCCL.cpp:390] Some NCCL operations have failed or timed out. Due to the asynchronous nature of CUDA kernels, subsequent GPU operations might run on corrupted/incomplete data. To avoid this inconsistency, we are taking the entire process down.                                                                                 \n\nterminate called after throwing an instance of 'std::runtime_error'                                                                                                        \nwhat():  [Rank 2] Watchdog caught collective operation timeout: \nWorkNCCL(OpType=BROADCAST, Timeout(ms)=1800000) ran for 1804406 milliseconds before timing out.        \n\n[E ProcessGroupNCCL.cpp:390] Some NCCL operations have failed or timed out. Due to the asynchronous nature of CUDA kernels, subsequent GPU operations might run on corrupted/incomplete data. To avoid this inconsistency, we are taking the entire process down.",
+        "description": "While running a distributed training on 4 A6000 GPUs, I get the following error:\n[E ProcessGroupNCCL.cpp:630] [Rank 3] Watchdog caught collective operation timeout: WorkNCCL(OpType=BROADCAST, Timeout(ms)=1800000) ran for 1803710 milliseconds before timing out.       \n                                                                                                                                                        [E ProcessGroupNCCL.cpp:390] Some NCCL operations have failed"
+    },
+    {
+        "exception": "error : Torch not compiled with CUDA enabled",
+        "message": "error : Torch not compiled with CUDA enabled",
+        "code_snippet": "$nvidia-smi\n\n+-----------------------------------------------------------------------------+\n| NVIDIA-SMI 525.85.05    Driver Version: 525.85.05    CUDA Version: 12.0     |\n|-------------------------------+----------------------+----------------------+",
+        "description": "When I run &quot;torch.rand(10).to(&quot;cuda&quot;)&quot;, I face &quot;error : Torch not compiled with CUDA enabled&quot;\nGPU : Nvidia RTX 3080 Ti\n$nvidia-smi\n\n+-----------------------------------------------------------------------------+\n| NVIDIA-SMI 525.85.05    Driver Version: 525.85.05    CUDA Version: 12.0     |\n|-------------------------------+----------------------+----------------------+\n\n$nvcc -V\nnvcc: NVIDIA (R) Cuda compiler driver\nC"
+    },
+    {
+        "exception": "How to get around in place operation error if index leaf variable for gradient update?",
+        "message": "How to get around in place operation error if index leaf variable for gradient update?",
+        "code_snippet": "import torch.nn as nn\nimport torch\nimport numpy as np\nfrom torch.autograd import Variable, Function\n\n# hyper parameters\nbatch_size = 100 # batch size of images\nld = 0.2 # sparse penalty\nlr = 0.1 # learning rate\n\nx = Variable(torch.from_numpy(np.random.normal(0,1,(batch_size,10,10))), requires_grad=False)  # original\n\n# depends on size of the dictionary, number of atoms.\nD = Variable(torch.from_numpy(np.random.normal(0,1,(500,10,10))), requires_grad=True)\n\n# hx sparse representation\nht = Variable(torch.from_numpy(np.random.normal(0,1,(batch_size,500,1,1))), requires_grad=True)\n\n# Dictionary loss function\nloss = nn.MSELoss()\n\n# customized shrink function to update gradient\nshrink_ht = lambda x: torch.stack([torch.sign(i)*torch.max(torch.abs(i)-lr*ld,0)[0] for i in x])\n\n### sparse reprsentation optimizer_ht single image.\noptimizer_ht = torch.optim.SGD([ht], lr=lr, momentum=0.9) # optimizer for sparse representation\n\n## update for the batch\nfor idx in range(len(x)):\n    optimizer_ht.zero_grad() # clear up gradients\n    loss_ht = 0.5*torch.norm((x[idx]-(D*ht[idx]).sum(dim=0)),p=2)**2\n    loss_ht.backward() # back propogation and calculate gradients\n    optimizer_ht.step() # update parameters with gradients\n    ht[idx] = shrink_ht(ht[idx])  # customized shrink function.\n\nRuntimeError Traceback (most recent call last) in ()\n15 loss_ht.backward() # back propogation and calculate gradients\n16 optimizer_ht.step() # update parameters with gradients\n\u2014&gt; 17 ht[idx] = shrink_ht(ht[idx]) # customized shrink function.\n18\n19\n\n/home/miniconda3/lib/python3.6/site-packages/torch/autograd/variable.py in setitem(self, key, value)\n85 return MaskedFill.apply(self, key, value, True)\n86 else:\n\u2014&gt; 87 return SetItem.apply(self, key, value)\n88\n89 def deepcopy(self, memo):",
+        "description": "I am encountering In place operation error when I am trying to index a leaf variable to update gradients with customized Shrink function. I cannot work around it. Any help is highly appreciated!\n\nimport torch.nn as nn\nimport torch\nimport numpy as np\nfrom torch.autograd import Variable, Function\n\n# hyper parameters\nbatch_size = 100 # batch size of images\nld = 0.2 # sparse penalty\nlr = 0.1 # learning rate\n\nx = Variable(torch.from_numpy(np."
+    },
+    {
+        "exception": "OSError: Error no file named [&#39;pytorch_model.bin&#39;, &#39;tf_model.h5&#39;, &#39;model.ckpt.index&#39;]",
+        "message": "OSError: Error no file named [&#39;pytorch_model.bin&#39;, &#39;tf_model.h5&#39;, &#39;model.ckpt.index&#39;]",
+        "code_snippet": "OSError: Error no file named ['pytorch_model.bin', 'tf_model.h5', 'model.ckpt.index'] found in directory uncased_L-12_H-768_A-12 or 'from_tf' set to False",
+        "description": "When I load the BERT pretrained model online I get this error OSError: Error no file named ['pytorch_model.bin', 'tf_model.h5', 'model.ckpt.index'] found in directory uncased_L-12_H-768_A-12 or 'from_tf' set to False what should I do?"
+    },
+    {
+        "exception": "HTTP Error when trying to download MNIST data",
+        "message": "HTTP Error when trying to download MNIST data",
+        "code_snippet": "# MNIST dataset statistics:\n# mean = tensor([0.1307]) &amp; std dev = tensor([0.3081])\nmean = np.array([0.1307])\nstd_dev = np.array([0.3081])\n\ntransforms_apply = transforms.Compose([\n    transforms.ToTensor(),\n    transforms.Normalize(mean = mean, std = std_dev)\n    ])",
+        "description": "I am using Google Colab for training a LeNet-300-100 fully-connected neural network on MNIST using Python3 and PyTorch 1.8.\nTo apply the transformations and download the MNIST dataset, the following code is being used:\n# MNIST dataset statistics:\n# mean = tensor([0.1307]) &amp; std dev = tensor([0.3081])\nmean = np.array([0.1307])\nstd_dev = np.array([0.3081])\n\ntransforms_apply = transforms.Compose([\n    transforms.ToTensor(),\n    transforms.Normalize(mean = mean, std = st"
+    },
+    {
+        "exception": "RuntimeError: CUDA error: no kernel image is available for execution on the device after model.cuda()",
+        "message": "RuntimeError: CUDA error: no kernel image is available for execution on the device after model.cuda()",
+        "code_snippet": "class Model(torch.nn.Module):\n    def __init__(self, sizes, config):\n        super(Model, self).__init__()\n\n        self.lstm = []\n        for i in range(len(sizes) - 2):\n            self.lstm.append(LSTM(sizes[i], sizes[i+1], num_layers=8))\n        self.lstm.append(torch.nn.Linear(sizes[-2], sizes[-1]).cuda())\n        self.lstm = torch.nn.ModuleList(self.lstm)\n\n        self.config_mel = config.mel_features\n\n    def forward(self, x):\n        # convert to log-domain\n        x = x.clip(min=1e-6).log10()\n\n        for layer in self.lstm[:-1]:\n            x, _ = layer(x)\n            x = torch.relu(x)\n\n        #x = torch_unpack_seq(x)[0]\n\n        x = self.lstm[-1](x)\n        mask = torch.sigmoid(x)\n\n        return mask",
+        "description": "I am working on this model:\nclass Model(torch.nn.Module):\n    def __init__(self, sizes, config):\n        super(Model, self).__init__()\n\n        self.lstm = []\n        for i in range(len(sizes) - 2):\n            self.lstm.append(LSTM(sizes[i], sizes[i+1], num_layers=8))\n        self.lstm.append(torch.nn.Linear(sizes[-2], sizes[-1]).cuda())\n        self.lstm = torch.nn.ModuleList(self.lstm)\n\n        self.config_mel = config.mel_features\n\n    def forward(self, x):\n        # conver"
+    },
+    {
+        "exception": "How can I fix this pytorch error on Windows? (ModuleNotFoundError: No module named &#39;torch&#39;)",
+        "message": "How can I fix this pytorch error on Windows? (ModuleNotFoundError: No module named &#39;torch&#39;)",
+        "code_snippet": "ModuleNotFoundError: No module named 'torch'",
+        "description": "Edit: You might want to skip to the end of the question first, I've followed some advice in comments / answers and the current error is different from the original (appears to be related to numpy possibly).\n\nThis error ModuleNotFoundError: No module named 'torch' shows up in tons of threads, I've been trying solutions all day. I'll go through my troubleshooting steps one by one, using the solutions suggested in threads.\n\nSystem info:\nWindows 10"
+    },
+    {
+        "exception": "Anaconda Integration with Cuda 9.0 shows Incompatible Package Error",
+        "message": "Anaconda Integration with Cuda 9.0 shows Incompatible Package Error",
+        "code_snippet": "Command-prompt",
+        "description": "I am trying to install CUDA 9.0  with NVIDIA-SMI: 445.75 in Windows 10. \n\nMy Cuda 9.0 installation is successful, as shown from Command-prompt   \n\n*(DL) C:\\Users\\User&gt;nvcc --version    \nnvcc: NVIDIA (R) Cuda compiler driver    \nCopyright (c) 2005-2017 NVIDIA Corporation    \nBuilt on Fri_Sep__1_21:08:32_Central_Daylight_Time_2017    \n**Cuda compilation tools, release **9.0**, V9.0.176***"
+    },
+    {
+        "exception": "HTTP Error 503: Service Unavailable when trying to download MNIST data",
+        "message": "HTTP Error 503: Service Unavailable when trying to download MNIST data",
+        "code_snippet": "#libraries\nimport torch\nimport torchvision\nfrom torchvision import datasets, transforms\nimport torch.nn as nn\n\ntrain_loader = torch.utils.data.DataLoader(\n  torchvision.datasets.MNIST(root='./data', train=True, download=True,\n                             transform=torchvision.transforms.Compose([\n                               torchvision.transforms.ToTensor(),\n                               torchvision.transforms.Normalize(\n                                 (0.1307,), (0.3081,))\n                             ])),\n  batch_size=batch_size_train, shuffle=True)\n\ntest_loader = torch.utils.data.DataLoader(\n  torchvision.datasets.MNIST(root='./data', train=False, download=True,\n                             transform=torchvision.transforms.Compose([\n                               torchvision.transforms.ToTensor(),\n                               torchvision.transforms.Normalize(\n                                 (0.1307,), (0.3081,))\n                             ])),\n  batch_size=batch_size_test, shuffle=True)",
+        "description": "I'm trying to run code that I wrote a week ago on Google Colab (and it worked), but I'm getting this error now for some reason.\n#libraries\nimport torch\nimport torchvision\nfrom torchvision import datasets, transforms\nimport torch.nn as nn\n\ntrain_loader = torch.utils.data.DataLoader(\n  torchvision.datasets.MNIST(root='./data', train=True, download=True,\n                             transform=torchvision.transforms.Compose([\n                               torchvision.transforms.To"
+    },
+    {
+        "exception": "CUDA out of memory error, cannot reduce batch size",
+        "message": "CUDA out of memory error, cannot reduce batch size",
+        "code_snippet": "",
+        "description": "I want to run some experiments on my GPU device, but I get this error:\n\nRuntimeError: CUDA out of memory. Tried to allocate 3.63 GiB (GPU 0;\n15.90 GiB total capacity; 13.65 GiB already allocated; 1.57 GiB free; 13.68 GiB reserved in total by PyTorch)\n\nI read about possible solutions here, and the common solution is this:\n\nIt is because of mini-batch of data"
+    },
+    {
+        "exception": "GPU memory is empty, but CUDA out of memory error occurs",
+        "message": "GPU memory is empty, but CUDA out of memory error occurs",
+        "code_snippet": "CUDA out of memory",
+        "description": "During training this code with ray tune(1 gpu for 1 trial), after few hours\nof training (about 20 trials) CUDA out of memory error occurred from GPU:0,1. And even after terminated the training process, the GPUS still give out of memory error.\n<a href=\"https://i.sstatic.net/gGL8v.png\" rel=\"noreferrer\""
     }
 ]

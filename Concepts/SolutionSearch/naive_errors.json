@@ -1,0 +1,141 @@
+[
+    {
+        "exception": "ZeroDivisionError",
+        "message": "division by zero",
+        "stack_trace": [
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
+                "line": 26,
+                "function": "capture_and_append_errors",
+                "code": "error_function()  # Execute function to trigger an error"
+            },
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
+                "line": 2,
+                "function": "zero_division_error",
+                "code": "x = 1 / 0  # Division by zero"
+            }
+        ],
+        "description": "Triggered ZeroDivisionError by executing zero_division_error()"
+    },
+    {
+        "exception": "KeyError",
+        "message": "'age'",
+        "stack_trace": [
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
+                "line": 26,
+                "function": "capture_and_append_errors",
+                "code": "error_function()  # Execute function to trigger an error"
+            },
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
+                "line": 6,
+                "function": "key_error",
+                "code": "print(d[\"age\"])  # KeyError: 'age'"
+            }
+        ],
+        "description": "Triggered KeyError by executing key_error()"
+    },
+    {
+        "exception": "IndexError",
+        "message": "list index out of range",
+        "stack_trace": [
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
+                "line": 26,
+                "function": "capture_and_append_errors",
+                "code": "error_function()  # Execute function to trigger an error"
+            },
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
+                "line": 10,
+                "function": "index_error",
+                "code": "print(lst[5])  # IndexError"
+            }
+        ],
+        "description": "Triggered IndexError by executing index_error()"
+    },
+    {
+        "exception": "AttributeError",
+        "message": "'NoneType' object has no attribute 'append'",
+        "stack_trace": [
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
+                "line": 26,
+                "function": "capture_and_append_errors",
+                "code": "error_function()  # Execute function to trigger an error"
+            },
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
+                "line": 14,
+                "function": "attribute_error",
+                "code": "x.append(5)  # AttributeError"
+            }
+        ],
+        "description": "Triggered AttributeError by executing attribute_error()"
+    },
+    {
+        "exception": "TypeError",
+        "message": "unsupported operand type(s) for +: 'int' and 'str'",
+        "stack_trace": [
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
+                "line": 26,
+                "function": "capture_and_append_errors",
+                "code": "error_function()  # Execute function to trigger an error"
+            },
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
+                "line": 17,
+                "function": "type_error",
+                "code": "x = 5 + \"hello\"  # TypeError"
+            }
+        ],
+        "description": "Triggered TypeError by executing type_error()"
+    },
+    {
+        "exception": "RecursionError",
+        "message": "maximum recursion depth exceeded",
+        "stack_trace": [
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
+                "line": 26,
+                "function": "capture_and_append_errors",
+                "code": "error_function()  # Execute function to trigger an error"
+            },
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
+                "line": 22,
+                "function": "recursion_error",
+                "code": "recurse()"
+            },
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
+                "line": 21,
+                "function": "recurse",
+                "code": "recurse()  # Exceed recursion limit"
+            }
+        ],
+        "description": "Triggered RecursionError by executing recursion_error()"
+    },
+    {
+        "exception": "ValueError",
+        "message": "expected sequence of length 3 at dim 1 (got 2)",
+        "stack_trace": [
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\gen_errors.py",
+                "line": 26,
+                "function": "capture_and_append_errors",
+                "code": "error_function()  # Execute function to trigger an error"
+            },
+            {
+                "file": "C:\\Users\\sriha\\OneDrive\\Desktop\\Projects\\RAG\\StackOverFix\\Concepts\\ErrorExtraction\\error_snippets.py",
+                "line": 38,
+                "function": "pytorch_invalid_shape",
+                "code": "a = torch.tensor([[1, 2, 3], [4, 5]])  # ValueError"
+            }
+        ],
+        "description": "Triggered ValueError (PyTorch) by executing pytorch_invalid_shape()"
+    }
+]
