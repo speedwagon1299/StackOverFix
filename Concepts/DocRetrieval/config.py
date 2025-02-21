@@ -40,7 +40,9 @@ SITE_CONFIG = {
     6: {
         "name": "Python",
         "base_url": "https://docs.python.org/3.12/library/index.html",
-        "content_selector": {"name": "article", "attrs": {}},
-        "valid_link_prefix": ["https://docs.python.org/3.12/library/"]
+        "content_selector": {"name": "div", "attrs": {"class": "body"}},
+        "valid_link_prefix": ["https://docs.python.org/3.12/library/"],   
+        "content_tags": ['h1', 'h2', 'h3', 'p', 'pre', 'code', 'li', 'dt', 'dd'], 
+        "exclude_selectors": [{'name': 'div', 'attrs': {'class': 'sphinxsidebar'}}]  
     }
 }
