@@ -117,7 +117,7 @@ def bfs_scrape(site_config):
         time.sleep(0.3)
 
     # Save all scraped data to JSON
-    with open("np_scraped_data.json", "w") as f:
+    with open("pd_scraped_data.json", "w") as f:
         json.dump(scraped_data, f, indent=2)
 
     print(f"[✅] Scraped {len(scraped_data)} pages for {site_config['name']}.")
