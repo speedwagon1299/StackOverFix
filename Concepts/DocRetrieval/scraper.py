@@ -30,8 +30,10 @@ def get_internal_links(base_url, page_url, valid_link_prefix):
         full_url, _ = urldefrag(full_url)  # Remove anchor links
 
         # Only keep valid internal documentation URLs
-        if full_url.startswith(valid_link_prefix) and is_valid_url(full_url):
-            links.add(full_url)
+        for val_lin_pref in valid_link_prefix:
+            if full_url.startswith(val_lin_pref) and is_valid_url(full_url):
+                links.add(full_url)
+                break
 
     return list(links)
 
@@ -117,7 +119,7 @@ def bfs_scrape(site_config):
         time.sleep(0.3)
 
     # Save all scraped data to JSON
-    with open("pd_scraped_data.json", "w") as f:
+    with open("py_scraped_data.json", "w") as f:
         json.dump(scraped_data, f, indent=2)
 
     print(f"[✅] Scraped {len(scraped_data)} pages for {site_config['name']}.")
