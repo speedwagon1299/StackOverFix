@@ -9,8 +9,8 @@ def is_valid_url(url):
     parsed = urlparse(url)
     return bool(parsed.netloc) and bool(parsed.scheme)
 
-def get_internal_links(base_url, page_url):
-    """Extract all valid internal documentation links from a page, excluding anchor links."""
+def get_internal_links(base_url, page_url, valid_link_prefix):
+    """Extract valid internal documentation links from a page."""
     try:
         response = requests.get(page_url, timeout=10)
     except requests.exceptions.RequestException as e:
@@ -27,19 +27,16 @@ def get_internal_links(base_url, page_url):
     for a_tag in soup.find_all("a", href=True):
         href = a_tag.attrs["href"]
         full_url = urljoin(base_url, href)
+        full_url, _ = urldefrag(full_url)  # Remove anchor links
 
-        # Remove URL fragment (anchor) part
-        full_url, _ = urldefrag(full_url)
-
-        # Keep only valid internal documentation URLs
-        if full_url.startswith(base_url) and is_valid_url(full_url):
+        # Only keep valid internal documentation URLs
+        if full_url.startswith(valid_link_prefix) and is_valid_url(full_url):
             links.add(full_url)
 
     return list(links)
 
-# tensorflow
-def scrape_content(url):
-    """Extracts main API content from TensorFlow documentation pages."""
+def scrape_content(url, content_selector):
+    """Extract main content from a documentation page."""
     try:
         response = requests.get(url, timeout=10)
     except requests.exceptions.RequestException as e:
@@ -53,59 +50,35 @@ def scrape_content(url):
     soup = BeautifulSoup(response.content, 'html.parser')
     texts = []
 
-    # Attempt to find the TensorFlow specific API documentation container
-    main_content = soup.find('div', {'class': 'devsite-article-body'})
+    # Use site-specific selector to extract the main content
+    main_content = soup.find(content_selector['name'], content_selector['attrs'])
 
-    # Fallback: Try a broader section if specific container is missing
     if not main_content:
-        main_content = soup.find('section') or soup
+        print(f"[⚠️] No specific content found for {url}, scraping entire page.")
+        main_content = soup
 
-    # Extract text from relevant tags inside the main content
-    for tag in main_content.find_all(['h1', 'h2', 'h3', 'p', 'code', 'li', 'pre']):
+    # Extract text from relevant tags
+    for tag in main_content.find_all(['h1', 'h2', 'h3', 'p', 'code', 'li', 'pre', 'dt', 'dd']):
         text = tag.get_text(separator=' ', strip=True)
         if text:
             texts.append(text)
 
-    # Combine extracted texts into a single content string
-    content = "\n".join(texts)
+    # Combine and deduplicate content
+    content = "\n".join(list(dict.fromkeys(texts)))  # Remove duplicates while preserving order
 
-    # Check if the content is meaningful or just generic text
+    # Quality control: avoid saving pages with too little content
     if len(content.strip()) < 50:
         print(f"[⚠️] Extracted content from {url} seems too short or generic.")
         return ""
 
     return content
 
-# pytorch
-# def scrape_content(url):
-#     """Extract main text content from a documentation page."""
-#     try:
-#         response = requests.get(url, timeout=10)
-#     except requests.exceptions.RequestException as e:
-#         print(f"[❌] Error fetching content from {url}: {e}")
-#         return ""
+def bfs_scrape(site_config):
+    """Perform BFS to scrape all documentation pages based on site config."""
+    base_url = site_config['base_url']
+    valid_link_prefix = site_config['valid_link_prefix']
+    content_selector = site_config['content_selector']
 
-#     if response.status_code != 200:
-#         print(f"[❌] Failed to fetch content from {url}")
-#         return ""
-
-#     soup = BeautifulSoup(response.content, 'html.parser')
-#     texts = []
-
-#     # Target the main content area
-#     main_content = soup.find('div', {'role': 'main'})
-#     if not main_content:
-#         main_content = soup  # Fallback
-
-#     for tag in main_content.find_all(['h1', 'h2', 'h3', 'p', 'code', 'li']):
-#         text = tag.get_text(strip=True)
-#         if text:
-#             texts.append(text)
-
-#     return "\n".join(texts)
-
-def bfs_scrape_and_collect(base_url):
-    """Perform BFS to scrape all documentation pages, excluding anchor links."""
     queue = deque([base_url])
     visited = set()
     scraped_data = []
@@ -119,15 +92,15 @@ def bfs_scrape_and_collect(base_url):
         print(f"[🔍] Visiting: {current_url}")
 
         # Scrape content from current page
-        content = scrape_content(current_url)
+        content = scrape_content(current_url, content_selector)
         if content:
             scraped_data.append({
                 "url": current_url,
                 "content": content
             })
 
-        # Find and enqueue internal links, excluding anchor links
-        child_links = get_internal_links(base_url, current_url)
+        # Find and enqueue internal links
+        child_links = get_internal_links(base_url, current_url, valid_link_prefix)
         for link in child_links:
             if link not in visited:
                 queue.append(link)
@@ -136,8 +109,8 @@ def bfs_scrape_and_collect(base_url):
         time.sleep(0.3)
 
     # Save all scraped data to JSON
-    with open("tfkeras_docs.json", "w") as f:
+    with open("scraped_data.json", "w") as f:
         json.dump(scraped_data, f, indent=2)
 
-    print(f"[✅] Scraped {len(scraped_data)} pages (internal + leaf nodes).")
+    print(f"[✅] Scraped {len(scraped_data)} pages for {site_config['name']}.")
     return scraped_data
