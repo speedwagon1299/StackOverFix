@@ -37,8 +37,9 @@ def get_internal_links(base_url, page_url):
 
     return list(links)
 
+# tensorflow
 def scrape_content(url):
-    """Extract main text content from a documentation page."""
+    """Extracts main API content from TensorFlow documentation pages."""
     try:
         response = requests.get(url, timeout=10)
     except requests.exceptions.RequestException as e:
@@ -52,17 +53,56 @@ def scrape_content(url):
     soup = BeautifulSoup(response.content, 'html.parser')
     texts = []
 
-    # Target the main content area
-    main_content = soup.find('div', {'role': 'main'})
-    if not main_content:
-        main_content = soup  # Fallback
+    # Attempt to find the TensorFlow specific API documentation container
+    main_content = soup.find('div', {'class': 'devsite-article-body'})
 
-    for tag in main_content.find_all(['h1', 'h2', 'h3', 'p', 'code', 'li']):
-        text = tag.get_text(strip=True)
+    # Fallback: Try a broader section if specific container is missing
+    if not main_content:
+        main_content = soup.find('section') or soup
+
+    # Extract text from relevant tags inside the main content
+    for tag in main_content.find_all(['h1', 'h2', 'h3', 'p', 'code', 'li', 'pre']):
+        text = tag.get_text(separator=' ', strip=True)
         if text:
             texts.append(text)
 
-    return "\n".join(texts)
+    # Combine extracted texts into a single content string
+    content = "\n".join(texts)
+
+    # Check if the content is meaningful or just generic text
+    if len(content.strip()) < 50:
+        print(f"[⚠️] Extracted content from {url} seems too short or generic.")
+        return ""
+
+    return content
+
+# pytorch
+# def scrape_content(url):
+#     """Extract main text content from a documentation page."""
+#     try:
+#         response = requests.get(url, timeout=10)
+#     except requests.exceptions.RequestException as e:
+#         print(f"[❌] Error fetching content from {url}: {e}")
+#         return ""
+
+#     if response.status_code != 200:
+#         print(f"[❌] Failed to fetch content from {url}")
+#         return ""
+
+#     soup = BeautifulSoup(response.content, 'html.parser')
+#     texts = []
+
+#     # Target the main content area
+#     main_content = soup.find('div', {'role': 'main'})
+#     if not main_content:
+#         main_content = soup  # Fallback
+
+#     for tag in main_content.find_all(['h1', 'h2', 'h3', 'p', 'code', 'li']):
+#         text = tag.get_text(strip=True)
+#         if text:
+#             texts.append(text)
+
+#     return "\n".join(texts)
 
 def bfs_scrape_and_collect(base_url):
     """Perform BFS to scrape all documentation pages, excluding anchor links."""
