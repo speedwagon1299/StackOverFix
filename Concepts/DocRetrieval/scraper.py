@@ -96,7 +96,7 @@ def bfs_scrape_and_collect(base_url):
         time.sleep(0.3)
 
     # Save all scraped data to JSON
-    with open("scraped_docs.json", "w") as f:
+    with open("tfkeras_docs.json", "w") as f:
         json.dump(scraped_data, f, indent=2)
 
     print(f"[✅] Scraped {len(scraped_data)} pages (internal + leaf nodes).")

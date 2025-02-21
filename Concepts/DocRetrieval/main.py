@@ -4,7 +4,7 @@ from embedder import Embedder
 from storage import ChromaDBHandler
 
 def main():
-    base_url = "https://pytorch.org/docs/stable/"
+    base_url = "https://www.tensorflow.org/api_docs/python/tf/keras"
 
     # Step 1: BFS Crawl to scrape all documentation pages
     print("[🚀] Starting BFS documentation crawl...")

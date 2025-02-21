@@ -2,7 +2,7 @@ import chromadb
 from chromadb.config import Settings
 
 class ChromaDBHandler:
-    def __init__(self, collection_name='pytorch_docs'):
+    def __init__(self, collection_name='tfkeras_docs'):
         self.client = chromadb.Client(Settings())
         self.collection = self.client.get_or_create_collection(collection_name)
 
