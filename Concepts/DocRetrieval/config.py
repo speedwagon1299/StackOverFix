@@ -3,21 +3,27 @@
 SITE_CONFIG = {
     1: {
         "name": "NumPy",
-        "base_url": "https://numpy.org/doc/stable/",
-        "content_selector": {"name": "div", "attrs": {"class": "document"}},
-        "valid_link_prefix": "https://numpy.org/doc/stable/"
+        "base_url": "https://numpy.org/doc/2.2/reference/",
+        "content_selector": {"name": "article", "attrs": {}},
+        "valid_link_prefix": "https://numpy.org/doc/2.2/reference/",
+        "content_tags": ['h1', 'h2', 'h3', 'p', 'pre', 'code', 'li', 'dt', 'dd'],
+        "exclude_selectors": [{'name': 'div', 'attrs': {'class': 'sphinxsidebar'}}]
     },
     2: {
         "name": "Pandas",
-        "base_url": "https://pandas.pydata.org/docs/",
-        "content_selector": {"name": "div", "attrs": {"class": "section"}},
-        "valid_link_prefix": "https://pandas.pydata.org/docs/"
+        "base_url": "https://pandas.pydata.org/docs/reference/index.html",
+        "content_selector": {"name": "article", "attrs": {}},
+        "valid_link_prefix": "https://pandas.pydata.org/docs/reference/",
+        "content_tags": ['h1', 'h2', 'h3', 'p', 'pre', 'code', 'li', 'dt', 'dd'],
+        "exclude_selectors": [{'name': 'div', 'attrs': {'class': 'sphinxsidebar'}}]
     },
     3: {
         "name": "Scikit-learn",
-        "base_url": "https://scikit-learn.org/stable/documentation.html",
-        "content_selector": {"name": "div", "attrs": {"class": "document"}},
-        "valid_link_prefix": "https://scikit-learn.org/stable/"
+        "base_url": "https://scikit-learn.org/stable/api/",
+        "content_selector": {"name": "article", "attrs": {}},
+        "valid_link_prefix": "https://scikit-learn.org/stable/api/",
+        "content_tags": ['h1', 'h2', 'h3', 'p', 'pre', 'code', 'li', 'dt', 'dd'],
+        "exclude_selectors": [{'name': 'div', 'attrs': {'class': 'sphinxsidebar'}}]
     },
     4: {
         "name": "TensorFlow",
