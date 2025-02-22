@@ -5,3 +5,5 @@ np_scraped_data.json filter=lfs diff=lfs merge=lfs -text
 pd_scraped_data.json filter=lfs diff=lfs merge=lfs -text
 sklearn_scraped_docs.json filter=lfs diff=lfs merge=lfs -text
 py_scraped_data.json filter=lfs diff=lfs merge=lfs -text
+pd_metadata.npy filter=lfs diff=lfs merge=lfs -text
+pd_embeddings.npy filter=lfs diff=lfs merge=lfs -text
