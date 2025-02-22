@@ -1,4 +1,4 @@
-from Concepts.DocRetrieval.src.config import SITE_CONFIG
+from config import SITE_CONFIG
 from scraper import bfs_scrape
 
 def main():

@@ -4,16 +4,19 @@ import os
 
 # Load embeddings and metadata
 embeddings = np.load('../data/pd_embeddings.npy')
-metadata = np.load('../data/pd_metadata.npy', allow_pickle=True).item()
+metadata = np.load('../data/pd_metadata.npy', allow_pickle=True)  # List of dicts
 
-# FAISS expects float32 data
+# Ensure embeddings are float32 for FAISS
 embeddings = embeddings.astype('float32')
 
-# Initialize FAISS index (using L2 similarity)
+# Validate data alignment
+assert len(embeddings) == len(metadata), "Embeddings and metadata count mismatch."
+
+# Initialize FAISS index (L2 similarity)
 dimension = embeddings.shape[1]
 index = faiss.IndexFlatL2(dimension)
 
-# Add embeddings to the index
+# Add embeddings to the FAISS index
 index.add(embeddings)
 print(f"✅ FAISS index built with {index.ntotal} vectors.")
 
@@ -22,8 +25,6 @@ faiss_index_path = '../data/faiss_index.bin'
 faiss.write_index(index, faiss_index_path)
 print(f"💾 FAISS index saved to {faiss_index_path}")
 
-# Save metadata mapped to embeddings
-# Metadata list where each entry corresponds to an embedding
-metadata_list = [metadata.get(str(i), {}) for i in range(len(embeddings))]
-np.save('../data/faiss_metadata.npy', metadata_list)
+# Save metadata as a NumPy array
+np.save('../data/faiss_metadata.npy', metadata)
 print("💾 Metadata saved to '../data/faiss_metadata.npy'")
