@@ -7,7 +7,7 @@ import faiss
 
 def contextual_query(query_embedding, index, metadata, k=1):
     # Perform similarity search
-    distances, indices = index.search(np.array([query_embedding]), k)
+    _, indices = index.search(np.array([query_embedding]), k)
 
     # Collect matched chunks and their neighbors
     contextual_results = []
@@ -36,9 +36,9 @@ def contextual_query(query_embedding, index, metadata, k=1):
 # Example Usage
 if __name__ == "__main__":
     # Load FAISS index and metadata
-    faiss_index_path = '../data/faiss_index.bin'
+    faiss_index_path = '../data/pd_faiss_index.bin'
     index = faiss.read_index(faiss_index_path)
-    metadata = np.load('../data/faiss_metadata.npy', allow_pickle=True)
+    metadata = np.load('../data/pd_faiss_metadata.npy', allow_pickle=True)
 
     # Load query embedding
     query_embedding = np.load('../data/pd_embeddings.npy')[0].astype('float32')

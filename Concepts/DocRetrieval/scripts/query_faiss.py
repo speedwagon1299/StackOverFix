@@ -24,7 +24,7 @@ def generate_embedding(text):
     return embeddings[0].numpy().astype('float32')
 
 # Get user input
-query_text = "KeyError: 'column_name' not found in DataFrame"
+query_text = ""
 
 # Convert query to embedding
 query_embedding = generate_embedding(query_text)
