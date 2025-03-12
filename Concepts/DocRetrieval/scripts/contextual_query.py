@@ -4,6 +4,7 @@ Top chunk match with neighbouring chunks for context
 """
 import numpy as np
 import faiss
+import os
 
 def contextual_query(query_embedding, index, metadata, k=1):
     # Perform similarity search
@@ -36,12 +37,18 @@ def contextual_query(query_embedding, index, metadata, k=1):
 # Example Usage
 if __name__ == "__main__":
     # Load FAISS index and metadata
-    faiss_index_path = '../data/pd_faiss_index.bin'
+    faiss_index_path = 'py_faiss_index.bin'
+    meta_path = 'py_faiss_metadata.npy'
+    embed_path = 'py_embeddings.npy'
+    faiss_index_path = os.path.join("../data", faiss_index_path)
+    meta_path = os.path.join("../data", meta_path)
+    embed_path = os.path.join("../data", embed_path)
     index = faiss.read_index(faiss_index_path)
-    metadata = np.load('../data/pd_faiss_metadata.npy', allow_pickle=True)
+    metadata = np.load(meta_path, allow_pickle=True)
 
     # Load query embedding
-    query_embedding = np.load('../data/pd_embeddings.npy')[0].astype('float32')
+    query_embedding = np.load(embed_path)[100].astype('float32')
+    print(query_embedding[:10])
 
     # Run contextual query
     results = contextual_query(query_embedding, index, metadata, k=1)
@@ -49,6 +56,6 @@ if __name__ == "__main__":
     # Display results
     for res in results:
         print(f"\n📄 Document ID: {res['doc_id']}")
-        print("Contextual Chunks:")
+        print(f"Contextual Chunks: Out of {len(res['context'])}")
         for idx, chunk in enumerate(res['context']):
             print(f"Chunk {idx+1}: {chunk}")

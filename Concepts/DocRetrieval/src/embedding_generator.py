@@ -1,13 +1,26 @@
+"""
+Processes scraped_docs.json → Generates FAISS embeddings & metadata → Builds FAISS index.
+"""
+
 import json
 import numpy as np
-from transformers import AutoTokenizer, AutoModel
+import faiss
+import os
 import torch
+from transformers import AutoTokenizer, AutoModel
 
-# Load GraphCodeBERT for embeddings
+# Define paths
+DATA_DIR = "../data"
+DOCS_PATH = os.path.join(DATA_DIR, "py_scraped_docs.json")
+EMBED_PATH = os.path.join(DATA_DIR, "py_embeddings.npy")
+META_PATH = os.path.join(DATA_DIR, "py_faiss_metadata.npy")
+FAISS_INDEX_PATH = os.path.join(DATA_DIR, "py_faiss_index.bin")
+
+# Load GraphCodeBERT
 tokenizer = AutoTokenizer.from_pretrained("microsoft/graphcodebert-base")
 model = AutoModel.from_pretrained("microsoft/graphcodebert-base")
 
-MAX_TOKENS = 510  # Reduced to account for special tokens [CLS] and [SEP]
+MAX_TOKENS = 510  # Adjusted to fit special tokens
 
 def chunk_text(text, max_tokens=MAX_TOKENS):
     """Chunks text into segments based on token limits."""
@@ -20,65 +33,89 @@ def chunk_text(text, max_tokens=MAX_TOKENS):
     return chunks
 
 def generate_embedding(text):
-    """Generates embeddings for text chunks within token limits."""
+    """Generates an embedding for a given text."""
     inputs = tokenizer(text, return_tensors="pt", add_special_tokens=True)
     with torch.no_grad():
         outputs = model(**inputs)
         embeddings = outputs.last_hidden_state.mean(dim=1)
-    return embeddings[0].numpy()
+    return embeddings[0].numpy().astype('float32')
 
-def load_and_store_json(file_path, embeddings_file="pd_embeddings.npy", metadata_file="pd_metadata.npy"):
-    """Loads JSON, chunks content, and saves embeddings and metadata as .npy files."""
+def process_json_and_generate_embeddings():
+    """Processes the JSON file, generates embeddings, and saves metadata."""
     try:
-        with open(file_path, 'r') as f:
+        with open(DOCS_PATH, 'r') as f:
             docs = json.load(f)
-        print(f"✅ Successfully loaded {file_path}")
+        print(f"✅ Successfully loaded {DOCS_PATH}")
     except Exception as e:
-        print(f"❌ Error loading {file_path}: {e}")
+        print(f"❌ Error loading {DOCS_PATH}: {e}")
         return
-
+    
     all_embeddings = []
     all_metadata = []
 
     for i, doc in enumerate(docs):
+        doc_id = i  # Assign a unique document ID based on index
         url = doc.get("url", "")
         content = doc.get("content", "")
+
         try:
             chunks = chunk_text(content)
-            print(f'{i}: ')
             for idx, chunk in enumerate(chunks):
-                print(f'{idx}, {len(chunk.split())}')
                 embedding = generate_embedding(chunk)
                 all_embeddings.append(embedding)
                 all_metadata.append({
+                    "doc_id": doc_id,  # ✅ Store doc_id for retrieval
                     "url": url,
                     "chunk_index": idx,
-                    "content_snippet": chunk[:200]
+                    "text": chunk  # ✅ Store full text for context retrieval
                 })
 
             if i == 0:
-                print("\n🔹 First Embedding Output (Sample):")
-                print(embedding[:10])  # Print first 10 dimensions
+                print("\n🔹 Sample Embedding Output (First 10 dimensions):")
+                print(embedding[:10])
 
             if (i + 1) % 50 == 0:
-                print(f"✅ Processed {i + 1}/{len(docs)} documents with chunking")
-                # Save after every 50 documents
-                np.save(embeddings_file, np.array(all_embeddings))
-                np.save(metadata_file, np.array(all_metadata, dtype=object))
-                print(f"💾 Intermediate save to {embeddings_file} and {metadata_file}")
-
+                print(f"✅ Processed {i + 1}/{len(docs)} documents")
+                
         except Exception as e:
             print(f"❌ Error processing document {i}: {e}")
 
-    # Final save
+    # Save embeddings and metadata
     try:
-        np.save(embeddings_file, np.array(all_embeddings))
-        np.save(metadata_file, np.array(all_metadata, dtype=object))
-        print(f"✅ Final save to {embeddings_file}")
-        print(f"✅ Final save to {metadata_file}")
+        np.save(EMBED_PATH, np.array(all_embeddings))
+        np.save(META_PATH, np.array(all_metadata, dtype=object))
+        print(f"💾 Saved embeddings to {EMBED_PATH}")
+        print(f"💾 Saved metadata to {META_PATH}")
     except Exception as e:
         print(f"❌ Error saving .npy files: {e}")
 
+def build_faiss_index():
+    """Builds FAISS index from embeddings."""
+    try:
+        embeddings = np.load(EMBED_PATH)
+        metadata = np.load(META_PATH, allow_pickle=True)
+        
+        assert len(embeddings) == len(metadata), "❌ Embeddings and metadata count mismatch."
+        embeddings = embeddings.astype('float32')
+
+        # Initialize FAISS index (L2 similarity)
+        dimension = embeddings.shape[1]
+        index = faiss.IndexFlatL2(dimension)
+
+        # Add embeddings to the FAISS index
+        index.add(embeddings)
+        print(f"✅ FAISS index built with {index.ntotal} vectors.")
+
+        # Save the FAISS index
+        faiss.write_index(index, FAISS_INDEX_PATH)
+        print(f"💾 FAISS index saved to {FAISS_INDEX_PATH}")
+        
+    except Exception as e:
+        print(f"❌ Error building FAISS index: {e}")
+
 if __name__ == "__main__":
-    # Example usage
-    load_and_store_json("pd_scraped_docs.json")
+    # Step 1: Process JSON & Generate Embeddings
+    process_json_and_generate_embeddings()
+    
+    # Step 2: Build FAISS Index
+    build_faiss_index()

@@ -2,13 +2,17 @@ import numpy as np
 import faiss
 from transformers import AutoTokenizer, AutoModel
 import torch
+import os
 
 # Load FAISS index
-faiss_index_path = '../data/pd_faiss_index.bin'
+faiss_index_path = 'py_faiss_index.bin'
+faiss_index_path = os.path.join("../data", faiss_index_path)
 index = faiss.read_index(faiss_index_path)
 
 # Load metadata
-metadata = np.load('../data/pd_faiss_metadata.npy', allow_pickle=True)
+meta_path = 'py_faiss_metadata.npy'
+meta_path = os.path.join("../data", meta_path)
+metadata = np.load(meta_path, allow_pickle=True)
 
 # Load GraphCodeBERT (same as in embedder)
 tokenizer = AutoTokenizer.from_pretrained("microsoft/graphcodebert-base")
@@ -24,7 +28,7 @@ def generate_embedding(text):
     return embeddings[0].numpy().astype('float32')
 
 # Get user input
-query_text = ""
+query_text = "recursion error maximum depth exceeded in recursive function"
 
 # Convert query to embedding
 query_embedding = generate_embedding(query_text)
