@@ -11,10 +11,10 @@ from transformers import AutoTokenizer, AutoModel
 
 # Define paths
 DATA_DIR = "../data"
-DOCS_PATH = os.path.join(DATA_DIR, "py_scraped_docs.json")
-EMBED_PATH = os.path.join(DATA_DIR, "py_embeddings.npy")
-META_PATH = os.path.join(DATA_DIR, "py_faiss_metadata.npy")
-FAISS_INDEX_PATH = os.path.join(DATA_DIR, "py_faiss_index.bin")
+DOCS_PATH = os.path.join(DATA_DIR, "pt_scraped_docs.json")
+EMBED_PATH = os.path.join(DATA_DIR, "pt_embeddings.npy")
+META_PATH = os.path.join(DATA_DIR, "pt_faiss_metadata.npy")
+FAISS_INDEX_PATH = os.path.join(DATA_DIR, "pt_faiss_index.bin")
 
 # Load GraphCodeBERT
 tokenizer = AutoTokenizer.from_pretrained("microsoft/graphcodebert-base")
