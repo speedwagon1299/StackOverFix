@@ -4,14 +4,25 @@ from transformers import AutoTokenizer, AutoModel
 import torch
 import os
 
+library = "Python"
+
+LIB_PATH = {
+    "Python": "py",
+    "Numpy": "np", 
+    "Pandas": "pd", 
+    "PyTorch": "pt", 
+    "Scikit-Learn": "sklearn", 
+    "TensorFlow Keras": "tfkeras"
+}
+
 # Load FAISS index
-faiss_index_path = 'py_faiss_index.bin'
-faiss_index_path = os.path.join("../data", faiss_index_path)
+faiss_index_path = 'faiss_index.bin'
+faiss_index_path = os.path.join("../data", LIB_PATH[library], faiss_index_path)
 index = faiss.read_index(faiss_index_path)
 
 # Load metadata
-meta_path = 'py_faiss_metadata.npy'
-meta_path = os.path.join("../data", meta_path)
+meta_path = 'faiss_metadata.npy'
+meta_path = os.path.join("../data", LIB_PATH[library], meta_path)
 metadata = np.load(meta_path, allow_pickle=True)
 
 # Load GraphCodeBERT (same as in embedder)
@@ -28,7 +39,7 @@ def generate_embedding(text):
     return embeddings[0].numpy().astype('float32')
 
 # Get user input
-query_text = "recursion error maximum depth exceeded in recursive function"
+query_text = "Recursion error, fix the infinite loop."
 
 # Convert query to embedding
 query_embedding = generate_embedding(query_text)
