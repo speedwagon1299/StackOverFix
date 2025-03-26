@@ -46,3 +46,5 @@ SITE_CONFIG = {
         "exclude_selectors": [{'name': 'div', 'attrs': {'class': 'sphinxsidebar'}}]  
     }
 }
+
+EMBED_MODEL = "nomic-ai/nomic-embed-text-v1"

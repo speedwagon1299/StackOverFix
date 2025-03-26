@@ -3,6 +3,7 @@ import faiss
 from transformers import AutoTokenizer, AutoModel
 import torch
 import os
+from config import EMBED_MODEL
 
 library = "Python"
 
@@ -16,18 +17,19 @@ LIB_PATH = {
 }
 
 # Load FAISS index
+DATA_DIR = "..\data_2"
 faiss_index_path = 'faiss_index.bin'
-faiss_index_path = os.path.join("../data", LIB_PATH[library], faiss_index_path)
+faiss_index_path = os.path.join(DATA_DIR, LIB_PATH[library], faiss_index_path)
 index = faiss.read_index(faiss_index_path)
 
 # Load metadata
 meta_path = 'faiss_metadata.npy'
-meta_path = os.path.join("../data", LIB_PATH[library], meta_path)
+meta_path = os.path.join(DATA_DIR, LIB_PATH[library], meta_path)
 metadata = np.load(meta_path, allow_pickle=True)
 
 # Load GraphCodeBERT (same as in embedder)
-tokenizer = AutoTokenizer.from_pretrained("microsoft/graphcodebert-base")
-model = AutoModel.from_pretrained("microsoft/graphcodebert-base")
+tokenizer = AutoTokenizer.from_pretrained(EMBED_MODEL)
+model = AutoModel.from_pretrained(EMBED_MODEL)
 
 def generate_embedding(text):
     """Generates embeddings for input text using GraphCodeBERT."""
@@ -39,7 +41,11 @@ def generate_embedding(text):
     return embeddings[0].numpy().astype('float32')
 
 # Get user input
-query_text = "Recursion error, fix the infinite loop."
+# query_text = "Recursion error, fix the infinite loop."
+query_text = """
+exception MemoryError
+Raised when an operation runs out of memory but the situation may still be rescued (by deleting some objects). The associated value is a string indicating what kind of (internal) operation ran out of memory.
+"""
 
 # Convert query to embedding
 query_embedding = generate_embedding(query_text)

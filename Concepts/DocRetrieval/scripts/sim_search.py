@@ -1,10 +1,11 @@
 import numpy as np
 from transformers import AutoTokenizer, AutoModel
 import torch
+from config import EMBED_MODEL
 
 # Load GraphCodeBERT for embeddings
-tokenizer = AutoTokenizer.from_pretrained("microsoft/graphcodebert-base")
-model = AutoModel.from_pretrained("microsoft/graphcodebert-base")
+tokenizer = AutoTokenizer.from_pretrained(EMBED_MODEL)
+model = AutoModel.from_pretrained(EMBED_MODEL)
 
 MAX_TOKENS = 510  # Reduced to account for special tokens [CLS] and [SEP]
 
@@ -20,7 +21,7 @@ def cosine_similarity(a, b):
     """Computes cosine similarity between two vectors."""
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-10)
 
-def search_similar_errors(error_message, embeddings_file="pd_embeddings.npy", metadata_file="pd_metadata.npy", top_k=10):
+def search_similar_errors(error_message, embeddings_file="py_embeddings.npy", metadata_file="py_metadata.npy", top_k=10):
     """Finds top K similar errors from embeddings."""
     # Load precomputed embeddings and metadata
     embeddings = np.load(embeddings_file)

@@ -9,8 +9,9 @@ import faiss
 import os
 import torch
 from transformers import AutoTokenizer, AutoModel
+from config import EMBED_MODEL
 
-library = "PyTorch"
+library = "Pandas"
 
 LIB_PATH = {
     "Python": "py",
@@ -22,15 +23,16 @@ LIB_PATH = {
 }
 
 # Define paths
-DATA_DIR = "../data"
+DATA_DIR = "..\data_2"
 DOCS_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "scraped_docs.json")
 EMBED_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "embeddings.npy")
 META_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "faiss_metadata.npy")
 FAISS_INDEX_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "faiss_index.bin")
 
+
 # Load GraphCodeBERT
-tokenizer = AutoTokenizer.from_pretrained("microsoft/graphcodebert-base")
-model = AutoModel.from_pretrained("microsoft/graphcodebert-base")
+tokenizer = AutoTokenizer.from_pretrained(EMBED_MODEL, trust_remote_code=True)
+model = AutoModel.from_pretrained(EMBED_MODEL, trust_remote_code=True)
 
 MAX_TOKENS = 510  # Adjusted to fit special tokens
 
@@ -44,13 +46,31 @@ def chunk_text(text, max_tokens=MAX_TOKENS):
         chunks.append(chunk_text)
     return chunks
 
+
 def generate_embedding(text):
-    """Generates an embedding for a given text."""
-    inputs = tokenizer(text, return_tensors="pt", add_special_tokens=True)
+    """Generates a pooled embedding with proper token limits and attention masking."""
+    inputs = tokenizer(
+        text,
+        return_tensors="pt",
+        truncation=True,
+        max_length=512,
+        padding="max_length"
+    )
+    
     with torch.no_grad():
         outputs = model(**inputs)
-        embeddings = outputs.last_hidden_state.mean(dim=1)
-    return embeddings[0].numpy().astype('float32')
+        last_hidden = outputs.last_hidden_state  # [batch, seq_len, hidden_dim]
+        attention_mask = inputs["attention_mask"].unsqueeze(-1)  # [batch, seq_len, 1]
+
+        # Mask out padding tokens
+        masked_hidden = last_hidden * attention_mask
+        summed = masked_hidden.sum(dim=1)
+        counts = attention_mask.sum(dim=1)
+        mean_pooled = summed / counts  # shape: [batch, hidden_dim]
+        embedding = mean_pooled[0]
+        embedding = embedding / embedding.norm()  # normalize
+        return embedding.numpy().astype('float32')
+
 
 def process_json_and_generate_embeddings():
     """Processes the JSON file, generates embeddings, and saves metadata."""
@@ -86,7 +106,7 @@ def process_json_and_generate_embeddings():
                 print("\n🔹 Sample Embedding Output (First 10 dimensions):")
                 print(embedding[:10])
 
-            if (i + 1) % 50 == 0:
+            if (i + 1) % 5 == 0:
                 print(f"✅ Processed {i + 1}/{len(docs)} documents")
                 
         except Exception as e:
