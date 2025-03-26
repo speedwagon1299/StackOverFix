@@ -5,7 +5,7 @@ import torch
 import os
 from config import EMBED_MODEL
 
-library = "Python"
+library = "Pandas"
 
 LIB_PATH = {
     "Python": "py",
@@ -28,8 +28,8 @@ meta_path = os.path.join(DATA_DIR, LIB_PATH[library], meta_path)
 metadata = np.load(meta_path, allow_pickle=True)
 
 # Load GraphCodeBERT (same as in embedder)
-tokenizer = AutoTokenizer.from_pretrained(EMBED_MODEL)
-model = AutoModel.from_pretrained(EMBED_MODEL)
+tokenizer = AutoTokenizer.from_pretrained(EMBED_MODEL, trust_remote_code=True)
+model = AutoModel.from_pretrained(EMBED_MODEL, trust_remote_code=True)
 
 def generate_embedding(text):
     """Generates embeddings for input text using GraphCodeBERT."""
@@ -41,10 +41,8 @@ def generate_embedding(text):
     return embeddings[0].numpy().astype('float32')
 
 # Get user input
-# query_text = "Recursion error, fix the infinite loop."
 query_text = """
-exception MemoryError
-Raised when an operation runs out of memory but the situation may still be rescued (by deleting some objects). The associated value is a string indicating what kind of (internal) operation ran out of memory.
+Access non-existent column in dataframe
 """
 
 # Convert query to embedding
@@ -52,6 +50,7 @@ query_embedding = generate_embedding(query_text)
 
 # Perform similarity search (fixed reshaping)
 k = 3  # Number of nearest neighbors
+
 distances, indices = index.search(query_embedding.reshape(1, -1), k)
 
 # Display results
