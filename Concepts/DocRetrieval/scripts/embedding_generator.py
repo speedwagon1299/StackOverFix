@@ -11,7 +11,7 @@ import torch
 from transformers import AutoTokenizer, AutoModel
 from config import EMBED_MODEL
 
-library = "Pandas"
+library = "Numpy"
 
 LIB_PATH = {
     "Python": "py",
