@@ -7,13 +7,10 @@ from dotenv import load_dotenv
 from transformers import AutoTokenizer, AutoModel, AutoModelForSequenceClassification
 import requests
 import spacy
+from config import EMBED_MODEL
 
 load_dotenv()
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
-
-# Model Config
-EMBED_MODEL = "nomic-ai/nomic-embed-text-v1"
-RERANK_MODEL = "nvidia/nv-rerankqa-mistral-4b-v3"
 
 # Setup Paths
 library = "Pandas"

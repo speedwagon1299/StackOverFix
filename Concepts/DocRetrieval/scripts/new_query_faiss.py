@@ -6,13 +6,14 @@ from dotenv import load_dotenv
 import torch
 from transformers import AutoTokenizer, AutoModel
 import json
+from config import RERANK_MODEL
 
 # Load API key
 load_dotenv()
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 
 # === File Paths ===
-library = "Python"
+library = "PyTorch"
 LIB_PATH = {
     "Python": "py", "Numpy": "np", "Pandas": "pd", "PyTorch": "pt",
     "Scikit-Learn": "sklearn", "TensorFlow Keras": "tfkeras"
@@ -34,7 +35,7 @@ def generate_embedding(text):
         cls = cls / cls.norm(dim=-1, keepdim=True)
         return cls[0].numpy().astype("float32")
 
-def search_and_rerank(query_text, top_k=25, rerank_k=5):
+def search_and_rerank(query_text, top_k=25, rerank_k=2):
     index = faiss.read_index(FAISS_INDEX_PATH)
     metadata = np.load(META_PATH, allow_pickle=True)
 
@@ -45,7 +46,7 @@ def search_and_rerank(query_text, top_k=25, rerank_k=5):
 
     # NVIDIA rerank request
     payload = {
-        "model": "nvidia/nv-rerankqa-mistral-4b-v3",
+        "model": RERANK_MODEL,
         "query": { "text": query_text },
         "passages": [{"text": r["text"]} for r in retrieved]
     }
@@ -56,7 +57,7 @@ def search_and_rerank(query_text, top_k=25, rerank_k=5):
 
     try:
         response = requests.post(
-            "https://ai.api.nvidia.com/v1/retrieval/nvidia/nv-rerankqa-mistral-4b-v3/reranking",
+            f"https://ai.api.nvidia.com/v1/retrieval/{RERANK_MODEL}/reranking",
             headers=headers,
             json=payload
         )
@@ -86,16 +87,25 @@ def search_and_rerank(query_text, top_k=25, rerank_k=5):
         score = r["logit"]
         retrieved[idx]["rerank_score"] = score
 
-    top_reranked = sorted(retrieved, key=lambda x: x["rerank_score"], reverse=True)[:rerank_k]
-
     print(f"\n🔍 Top {rerank_k} Results for Query: {query_text.strip()}")
-    for i, res in enumerate(top_reranked):
+    
+    for r in rankings:
+        i = r["index"]
+        retrieved[i]["rerank_score"] = r["logit"]
+
+    top_reranked_docs = sorted(retrieved, key=lambda x: x["rerank_score"], reverse=True)[:rerank_k]
+
+    for i, res in enumerate(top_reranked_docs):
         print(f"\nResult {i+1}:")
         print(f"Score: {res['rerank_score']:.4f}")
         print(f"URL: {res['url']}")
         print(f"Text: {res['text'][:300]}...")
 
+
+
 if __name__ == "__main__":
     # Example query
-    query = "AttributeError list object has no attribute keys Python"
+    query = """
+    RuntimeError Expected all tensors to be on the same device in PyTorch
+    """
     search_and_rerank(query)

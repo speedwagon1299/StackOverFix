@@ -48,3 +48,4 @@ SITE_CONFIG = {
 }
 
 EMBED_MODEL = "nomic-ai/nomic-embed-text-v1"
+RERANK_MODEL = "nvidia/nv-rerankqa-mistral-4b-v3"
