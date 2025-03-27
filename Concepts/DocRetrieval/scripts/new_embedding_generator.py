@@ -110,59 +110,7 @@ def build_faiss_index():
     except Exception as e:
         print(f"❌ Error building index: {e}")
 
-def search_and_rerank(query_text, top_k=25, rerank_k=5):
-    index = faiss.read_index(FAISS_INDEX_PATH)
-    metadata = np.load(META_PATH, allow_pickle=True)
-
-    query_embed = generate_embedding(query_text)
-    D, I = index.search(query_embed.reshape(1, -1), top_k)
-
-    retrieved = [{"score": D[0][i], **metadata[I[0][i]]} for i in range(top_k)]
-
-    # ✅ NVIDIA Reranker Payload
-    payload = {
-        "model": "nvidia/nv-rerankqa-mistral-4b-v3",
-        "query": { "text": query_text },
-        "passages": [{"text": r["text"]} for r in retrieved]
-    }
-
-    headers = {
-        "Authorization": f"Bearer {NVIDIA_API_KEY}",
-        "Accept": "application/json"
-    }
-
-    try:
-        response = requests.post(
-            "https://ai.api.nvidia.com/v1/retrieval/nvidia/nv-rerankqa-mistral-4b-v3/reranking",
-            headers=headers,
-            json=payload
-        )
-        response.raise_for_status()
-        reranked_response = response.json()["results"]
-    except Exception as e:
-        print(f"❌ NVIDIA API error: {e}")
-        return
-
-    # Append rerank scores
-    for i, r in enumerate(reranked_response):
-        retrieved[i]["rerank_score"] = r["score"]
-
-    # Sort by rerank_score
-    top_reranked = sorted(retrieved, key=lambda x: x["rerank_score"], reverse=True)[:rerank_k]
-
-    print(f"\n🔍 Top {rerank_k} Results for Query: {query_text.strip()}")
-    for i, res in enumerate(top_reranked):
-        print(f"\nResult {i+1}:")
-        print(f"Score: {res['rerank_score']:.4f}")
-        print(f"URL: {res['url']}")
-        print(f"Text: {res['text'][:300]}...")
-
-
 # ---------- MAIN ----------
 if __name__ == "__main__":
     process_json_and_generate_embeddings()
     build_faiss_index()
-
-    # 🔍 Run sample query
-    query = "Access non-existent column in dataframe"
-    search_and_rerank(query, top_k=25, rerank_k=5)
