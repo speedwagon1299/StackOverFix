@@ -1,0 +1,99 @@
+1.
+
+curl -X 'POST' 'http://127.0.0.1:8000/analyze_error' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "session_id": "67890",
+    "user_prompt": "Fix the matrix multiplication error in PyTorch.",
+    "code_snippet": "import torch\n\nx = torch.tensor([[1, 2], [3, 4]])\ny = torch.tensor([1, 2, 3])\nresult = torch.matmul(x, y)",
+    "stack_trace": {
+      "exception": "RuntimeError",
+      "message": "mat1 and mat2 shapes cannot be multiplied (2x2 and 3x1)",
+      "error_point": {
+        "file": "script.py",
+        "line": 5,
+        "function": "<module>",
+        "code": "result = torch.matmul(x, y)"
+      },
+      "filtered_trace": [
+        {
+          "file": "script.py",
+          "line": 5,
+          "function": "<module>",
+          "code": "result = torch.matmul(x, y)"
+        }
+      ]
+    }
+  }'
+
+
+curl -X 'POST' 'http://127.0.0.1:8000/submit_documents' \
+  -H 'Content-Type: application/json' \
+  -d '{ "session_id": "67890" }'
+
+
+2.
+
+curl -X 'POST' 'http://127.0.0.1:8000/analyze_error' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "session_id": "np001",
+  "user_prompt": "Fix the shape mismatch error in NumPy array operations.",
+  "code_snippet": "import numpy as np\n\nx = np.array([[1, 2], [3, 4]])\ny = np.array([5, 6, 7])\nresult = x + y",
+  "stack_trace": {
+    "exception": "ValueError",
+    "message": "operands could not be broadcast together with shapes (2,2) (3,)",
+    "error_point": {
+      "file": "script_numpy.py",
+      "line": 5,
+      "function": "<module>",
+      "code": "result = x + y"
+    },
+    "filtered_trace": [
+      {
+        "file": "script_numpy.py",
+        "line": 5,
+        "function": "<module>",
+        "code": "result = x + y"
+      }
+    ]
+  }
+}'
+
+curl -X 'POST' 'http://127.0.0.1:8000/submit_documents' \
+  -H 'Content-Type: application/json' \
+  -d '{"session_id": "np001"}'
+
+
+
+3.
+
+curl -X 'POST' 'http://127.0.0.1:8000/analyze_error' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "session_id": "pd001",
+  "user_prompt": "Fix the SettingWithCopyWarning in pandas when modifying a DataFrame slice.",
+  "code_snippet": "import pandas as pd\n\ndf = pd.DataFrame({\"A\": [1, 2, 3], \"B\": [4, 5, 6]})\nfiltered = df[df[\"A\"] > 1]\nfiltered[\"B\"] = filtered[\"B\"] * 2",
+  "stack_trace": {
+    "exception": "SettingWithCopyWarning",
+    "message": "A value is trying to be set on a copy of a slice from a DataFrame",
+    "error_point": {
+      "file": "script_pandas.py",
+      "line": 5,
+      "function": "<module>",
+      "code": "filtered[\"B\"] = filtered[\"B\"] * 2"
+    },
+    "filtered_trace": [
+      {
+        "file": "script_pandas.py",
+        "line": 5,
+        "function": "<module>",
+        "code": "filtered[\"B\"] = filtered[\"B\"] * 2"
+      }
+    ]
+  }
+}'
+
+curl -X 'POST' 'http://127.0.0.1:8000/submit_documents' \
+  -H 'Content-Type: application/json' \
+  -d '{"session_id": "pd001"}'

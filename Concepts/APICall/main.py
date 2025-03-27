@@ -9,6 +9,7 @@ from google import genai
 from google.genai import types
 from transformers import AutoTokenizer, AutoModel
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
 
@@ -17,6 +18,8 @@ os.environ['TF_ENABLE_ONEDNN_OPTS']="0"
 app = FastAPI()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 model = "gemini-2.0-flash-lite"
+EMBED_MODEL = "nomic-ai/nomic-embed-text-v1"
+RERANK_MODEL = "nvidia/nv-rerankqa-mistral-4b-v3"
 
 # ✅ FAISS & Embedding Setup
 LIB_PATH = {
@@ -30,22 +33,21 @@ LIB_PATH = {
 
 def load_faiss_index(library):
     """Loads FAISS index and metadata for the specified library."""
-    base_path = os.path.join("../DocRetrieval/data", LIB_PATH[library])
+    base_path = os.path.join("../DocRetrieval/data_2", LIB_PATH[library])
 
     index = faiss.read_index(os.path.join(base_path, "faiss_index.bin"))
     metadata = np.load(os.path.join(base_path, "faiss_metadata.npy"), allow_pickle=True)
     
     return index, metadata
 
-# ✅ Load GraphCodeBERT for Generating Query Embeddings
-tokenizer = AutoTokenizer.from_pretrained("microsoft/graphcodebert-base")
-graph_model = AutoModel.from_pretrained("microsoft/graphcodebert-base")
+tokenizer = AutoTokenizer.from_pretrained(EMBED_MODEL, trust_remote_code=True)
+embed_model = AutoModel.from_pretrained(EMBED_MODEL, trust_remote_code=True)
 
 def generate_embedding(text):
-    """Generates embeddings for input text using GraphCodeBERT."""
+    """Generates embeddings for input text using nomic-ai"""
     inputs = tokenizer(text, return_tensors="pt", add_special_tokens=True, truncation=True, max_length=512)
     with torch.no_grad():
-        outputs = graph_model(**inputs)
+        outputs = embed_model(**inputs)
         embeddings = outputs.last_hidden_state.mean(dim=1)  # Mean pooling
     return embeddings[0].numpy().astype('float32')
 
@@ -158,7 +160,7 @@ class SubmitDocumentsRequest(BaseModel):
 
 @app.post("/submit_documents")
 async def submit_documents(request: SubmitDocumentsRequest):
-    """Enhances previous analysis using FAISS document retrieval if needed."""
+    """Retrieves 25 candidates using FAISS, reranks with NVIDIA API, sends top-2 to Gemini."""
     session_id = request.session_id
     if session_id not in session_store:
         raise HTTPException(status_code=400, detail="Session ID not found. Make the first call first.")
@@ -171,34 +173,81 @@ async def submit_documents(request: SubmitDocumentsRequest):
     search_phrase = previous_context["search_phrase"]
     library = previous_context["library"]
 
-    retrieved_docs = []
-    used_urls = []
+    top_k_docs, used_urls = [], []
 
     if doc_req:
-        print("🔍 Performing FAISS search for:", search_phrase)
+        print(f"🔍 FAISS retrieval for: {search_phrase}")
         index, metadata = load_faiss_index(library)
         query_embedding = generate_embedding(search_phrase)
-        retrieved_docs = search_faiss(query_embedding, index, metadata, k=3)
 
+        # 🔹 Retrieve top-25 candidates
+        D, I = index.search(query_embedding.reshape(1, -1), 25)
+        candidates = [{"score": float(D[0][i]), **metadata[I[0][i]]} for i in range(len(I[0]))]
+
+        # 🔹 Rerank using NVIDIA API
+        payload = {
+            "model": RERANK_MODEL,
+            "query": { "text": search_phrase },
+            "passages": [{"text": doc["text"]} for doc in candidates]
+        }
+        headers = {
+            "Authorization": f"Bearer {os.getenv('NVIDIA_API_KEY')}",
+            "Accept": "application/json"
+        }
+
+        try:
+            response = requests.post(
+                f"https://ai.api.nvidia.com/v1/retrieval/{RERANK_MODEL}/reranking",
+                headers=headers,
+                json=payload
+            )
+            response.raise_for_status()
+            rankings = response.json().get("rankings", [])
+
+            # Add rerank scores
+            for rank in rankings:
+                idx = rank["index"]
+                candidates[idx]["rerank_score"] = rank["logit"]
+
+            reranked_docs = [candidates[rank["index"]] | {"rerank_score": rank["logit"]} 
+                 for rank in rankings if rank["logit"] >= 0]
+
+            if reranked_docs:
+                top_k_docs = sorted(reranked_docs, key=lambda x: x["rerank_score"], reverse=True)[:2]
+                used_urls = [doc["url"] for doc in top_k_docs]
+            else:
+                top_k_docs = []
+                used_urls = []
+                print("⚠️ No high-confidence documents found. Proceeding without docs.")
+
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"NVIDIA Rerank API failed: {str(e)}")
+
+    # 🔹 Construct final conversation
     full_conversation = {
         "user_prompt": user_prompt,
         "code_snippet": code_snippet,
         "stack_trace": stack_trace,
-        "retrieved_documents": retrieved_docs if doc_req else []
+        "retrieved_documents": top_k_docs
     }
 
-    if doc_req:
+    if doc_req and top_k_docs:
         system_instruction = (
             "You have access to additional documentation. "
             "Use the attached information only if it is directly relevant to the user's request. "
             "If a document is useful, include the URLs of the sources you used at the end of your response."
         )
+    elif doc_req and not top_k_docs:
+        system_instruction = (
+            "Although some documents were retrieved, they were not relevant enough. "
+            "Please proceed to solve the user's issue without relying on external documentation."
+        )
     else:
-        system_instruction = "Answer the user's request to the best of your ability without requiring external documentation."
+        system_instruction = (
+            "Answer the user's request to the best of your ability without requiring external documentation."
+        )
 
-    contents = [
-        types.Content(role="user", parts=[types.Part.from_text(text=json.dumps(full_conversation))])
-    ]
+    contents = [types.Content(role="user", parts=[types.Part.from_text(text=json.dumps(full_conversation))])]
 
     generate_content_config = types.GenerateContentConfig(
         temperature=1,
@@ -210,13 +259,10 @@ async def submit_documents(request: SubmitDocumentsRequest):
     )
 
     response_text = ""
-    for chunk in client.models.generate_content_stream(
-        model=model, contents=contents, config=generate_content_config
-    ):
+    for chunk in client.models.generate_content_stream(model=model, contents=contents, config=generate_content_config):
         response_text += chunk.text
 
     if doc_req:
-        used_urls = [doc["url"] for doc in retrieved_docs]
         response_text += f"\n\n📌 **Sources Used:** {', '.join(used_urls)}"
 
     session_store[session_id]["gemini_response"] = response_text

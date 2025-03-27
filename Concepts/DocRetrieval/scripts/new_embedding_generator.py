@@ -4,8 +4,7 @@ import faiss
 import os
 import torch
 from dotenv import load_dotenv
-from transformers import AutoTokenizer, AutoModel, AutoModelForSequenceClassification
-import requests
+from transformers import AutoTokenizer, AutoModel
 import spacy
 from config import EMBED_MODEL
 
