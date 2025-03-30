@@ -8,7 +8,7 @@ function App() {
             <main className="container mx-auto px-4 py-8 relative z-10">
                 <PageHeader
                     title="StackOverFix"
-                    description="Paste your Python error stack trace and code snippet to get an AI-powered fix."
+                    description="Paste your Python Error Stack Trace, Code Snippet and Prompt to get an AI-powered fix."
                 />
                 <DebugForm />
             </main>

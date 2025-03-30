@@ -71,29 +71,33 @@ curl -X 'POST' 'http://127.0.0.1:8000/submit_documents' \
 curl -X 'POST' 'http://127.0.0.1:8000/analyze_error' \
   -H 'Content-Type: application/json' \
   -d '{
-  "session_id": "pd001",
-  "user_prompt": "Fix the SettingWithCopyWarning in pandas when modifying a DataFrame slice.",
-  "code_snippet": "import pandas as pd\n\ndf = pd.DataFrame({\"A\": [1, 2, 3], \"B\": [4, 5, 6]})\nfiltered = df[df[\"A\"] > 1]\nfiltered[\"B\"] = filtered[\"B\"] * 2",
-  "stack_trace": {
-    "exception": "SettingWithCopyWarning",
-    "message": "A value is trying to be set on a copy of a slice from a DataFrame",
-    "error_point": {
-      "file": "script_pandas.py",
-      "line": 5,
-      "function": "<module>",
-      "code": "filtered[\"B\"] = filtered[\"B\"] * 2"
-    },
-    "filtered_trace": [
-      {
-        "file": "script_pandas.py",
-        "line": 5,
+    "session_id": "pd001",
+    "user_prompt": "Fix the nested asyncio run error and explain the correct way to run async code in Python.",
+    "code_snippet": "import asyncio\n\nasync def fetch_data():\n    await asyncio.sleep(1)\n    return \"data\"\n\nloop = asyncio.get_event_loop()\nresult = loop.run_until_complete(fetch_data())\n\nasync def main():\n    print(result)\n\nasyncio.run(main())",
+    "stack_trace": {
+      "exception": "RuntimeError",
+      "message": "asyncio.run() cannot be called from a running event loop",
+      "error_point": {
+        "file": "script_asyncio.py",
+        "line": 11,
         "function": "<module>",
-        "code": "filtered[\"B\"] = filtered[\"B\"] * 2"
-      }
-    ]
-  }
-}'
+        "code": "asyncio.run(main())"
+      },
+      "filtered_trace": [
+        {
+          "file": "script_asyncio.py",
+          "line": 11,
+          "function": "<module>",
+          "code": "asyncio.run(main())"
+        }
+      ]
+    }
+  }'
+
 
 curl -X 'POST' 'http://127.0.0.1:8000/submit_documents' \
   -H 'Content-Type: application/json' \
   -d '{"session_id": "pd001"}'
+
+
+

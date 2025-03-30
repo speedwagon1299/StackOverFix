@@ -10,12 +10,20 @@ from google.genai import types
 from transformers import AutoTokenizer, AutoModel
 from dotenv import load_dotenv
 import requests
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
 os.environ['TF_ENABLE_ONEDNN_OPTS']="0"
-
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # or specify ["http://localhost:5173"]
+    allow_credentials=True,
+    allow_methods=["*"],  # or ["POST"]
+    allow_headers=["*"],  # or ["Content-Type"]
+)
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 model = "gemini-2.0-flash-lite"
 EMBED_MODEL = "nomic-ai/nomic-embed-text-v1"
@@ -149,6 +157,7 @@ async def analyze_error(
             "library": library,
             "gemini_response": gemini_response  
         }
+        print(doc_req)
 
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Error parsing Gemini response.")
@@ -236,15 +245,18 @@ async def submit_documents(request: SubmitDocumentsRequest):
             "You have access to additional documentation. "
             "Use the attached information only if it is directly relevant to the user's request. "
             "If a document is useful, include the URLs of the sources you used at the end of your response."
+            "Ensure clean format and spacing in your response"
         )
     elif doc_req and not top_k_docs:
         system_instruction = (
-            "Although some documents were retrieved, they were not relevant enough. "
+            "Explicitly state that the provided documents were not useful."
             "Please proceed to solve the user's issue without relying on external documentation."
+            "Ensure clean format and spacing in your response"
         )
     else:
         system_instruction = (
             "Answer the user's request to the best of your ability without requiring external documentation."
+            "Ensure clean format and spacing in your response"
         )
 
     contents = [types.Content(role="user", parts=[types.Part.from_text(text=json.dumps(full_conversation))])]
@@ -267,4 +279,13 @@ async def submit_documents(request: SubmitDocumentsRequest):
 
     session_store[session_id]["gemini_response"] = response_text
 
-    return {"session_id": session_id, "updated_response": response_text}
+    print(response_text)
+
+    return {
+            "session_id": session_id, 
+            "user_prompt": user_prompt,
+            "code_snippet": code_snippet,
+            "stack_trace": stack_trace,
+            "retrieved_documents": used_urls, 
+            "updated_response": response_text
+            }

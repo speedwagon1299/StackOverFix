@@ -1,0 +1,56 @@
+{
+      "exception": "RuntimeError",
+      "message": "Expected target to have values in [0, C), got target[0][0] = 1",
+      "error_point": {
+        "file": "script_multilabel.py",
+        "line": 26,
+        "function": "<module>",
+        "code": "loss = F.multilabel_margin_loss(input_tensor, target_tensor)"
+      },
+      "filtered_trace": [
+        {
+          "file": "script_multilabel.py",
+          "line": 26,
+          "function": "<module>",
+          "code": "loss = F.multilabel_margin_loss(input_tensor, target_tensor)"
+        },
+        {
+          "file": "script_multilabel.py",
+          "line": 21,
+          "function": "normalize_targets",
+          "code": "return (t - t.min()) / (t.max() - t.min() + 1e-5)"
+        },
+        {
+          "file": "<python_env>/site-packages/torch/nn/functional.py",
+          "line": 3264,
+          "function": "multilabel_margin_loss",
+          "code": "return torch._C._nn.multilabel_margin_loss(input, target, reduction_enum)"
+        }
+      ]
+    }
+
+
+input_tensor = torch.tensor([[0.2, 0.3, 0.1, 0.4],
+                             [0.1, 0.7, 0.2, 0.0],
+                             [0.5, 0.2, 0.1, 0.3]], requires_grad=True)
+
+target_tensor = torch.tensor([[1, 0, 0, 1],
+                              [0, 1, 0, 0],
+                              [1, 0, 1, 0]])
+
+print("Target Tensor Shape:", target_tensor.shape)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+input_tensor = input_tensor.to(device)
+target_tensor = target_tensor.to(device)
+
+def normalize_targets(t):
+    return (t - t.min()) / (t.max() - t.min() + 1e-5)
+
+target_tensor = normalize_targets(target_tensor)
+target_tensor = target_tensor.int()
+
+loss = F.multilabel_margin_loss(input_tensor, target_tensor)
+
+
+
+Ensure Documentation is used to resolve these errors. Provide appropriate explanation as well
