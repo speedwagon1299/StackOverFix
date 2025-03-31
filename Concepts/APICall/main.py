@@ -14,13 +14,11 @@ from pydantic import BaseModel
 from google import genai
 from google.genai import types
 
-# Load environment variables
 load_dotenv()
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = "0"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # 🚀 Start loading models asynchronously
     asyncio.create_task(load_models())
     yield
     print("🛑 Shutting down")
@@ -40,7 +38,6 @@ app.add_middleware(
 def root():
     return {"message": "✅ Backend is working"}
 
-# ✅ Globals (initialized on startup)
 tokenizer = None
 embed_model = None
 client = None
