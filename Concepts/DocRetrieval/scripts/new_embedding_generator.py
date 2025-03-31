@@ -11,13 +11,12 @@ from config import EMBED_MODEL
 load_dotenv()
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 
-# Setup Paths
 library = "Pandas"
 LIB_PATH = {
     "Python": "py", "Numpy": "np", "Pandas": "pd", "PyTorch": "pt",
     "Scikit-Learn": "sklearn", "TensorFlow Keras": "tfkeras"
 }
-DATA_DIR = "../data_2"
+DATA_DIR = "../data"
 DOCS_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "scraped_docs.json")
 EMBED_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "embeddings.npy")
 META_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "faiss_metadata.npy")
@@ -25,7 +24,6 @@ FAISS_INDEX_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "faiss_index.bin")
 
 nlp = spacy.load("en_core_web_sm")
 
-# Load embedding model
 tokenizer = AutoTokenizer.from_pretrained(EMBED_MODEL, trust_remote_code=True)
 model = AutoModel.from_pretrained(EMBED_MODEL, trust_remote_code=True)
 
@@ -106,7 +104,6 @@ def build_faiss_index():
     except Exception as e:
         print(f"❌ Error building index: {e}")
 
-# ---------- MAIN ----------
 if __name__ == "__main__":
     process_json_and_generate_embeddings()
     build_faiss_index()

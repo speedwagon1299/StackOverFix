@@ -27,9 +27,8 @@ def get_internal_links(base_url, page_url, valid_link_prefix):
     for a_tag in soup.find_all("a", href=True):
         href = a_tag.attrs["href"]
         full_url = urljoin(base_url, href)
-        full_url, _ = urldefrag(full_url)  # Remove anchor links
+        full_url, _ = urldefrag(full_url) 
 
-        # Only keep valid internal documentation URLs
         for val_lin_pref in valid_link_prefix:
             if full_url.startswith(val_lin_pref) and is_valid_url(full_url):
                 links.add(full_url)
@@ -51,12 +50,10 @@ def scrape_content(url, content_selector, content_tags, exclude_selectors):
 
     soup = BeautifulSoup(response.content, 'html.parser')
 
-    # Remove excluded sections (e.g., sidebars)
     for selector in exclude_selectors:
         for tag in soup.find_all(selector['name'], selector['attrs']):
             tag.decompose()
 
-    # Use site-specific selector to extract the main content
     main_content = soup.find(content_selector['name'], content_selector['attrs'])
 
     if not main_content:
@@ -65,16 +62,13 @@ def scrape_content(url, content_selector, content_tags, exclude_selectors):
 
     texts = []
 
-    # Extract text from relevant tags
     for tag in main_content.find_all(content_tags):
         text = tag.get_text(separator=' ', strip=True)
         if text:
             texts.append(text)
 
-    # Combine and deduplicate content
-    content = "\n".join(list(dict.fromkeys(texts)))  # Remove duplicates while preserving order
+    content = "\n".join(list(dict.fromkeys(texts)))  
 
-    # Quality control: avoid saving pages with too little content
     if len(content.strip()) < 50:
         print(f"[⚠️] Extracted content from {url} seems too short or generic.")
         return ""
@@ -101,7 +95,6 @@ def bfs_scrape(site_config):
         visited.add(current_url)
         print(f"[🔍] Visiting: {current_url}")
 
-        # Scrape content from current page
         content = scrape_content(current_url, content_selector, content_tags, exclude_selectors)
         if content:
             scraped_data.append({
@@ -109,16 +102,13 @@ def bfs_scrape(site_config):
                 "content": content
             })
 
-        # Find and enqueue internal links
         child_links = get_internal_links(base_url, current_url, valid_link_prefix)
         for link in child_links:
             if link not in visited:
                 queue.append(link)
 
-        # Add delay to avoid overloading the server
         time.sleep(0.3)
 
-    # Save all scraped data to JSON
     with open("py_scraped_data.json", "w") as f:
         json.dump(scraped_data, f, indent=2)
 

@@ -22,19 +22,17 @@ LIB_PATH = {
     "TensorFlow Keras": "tfkeras"
 }
 
-# Define paths
-DATA_DIR = "..\data_2"
+DATA_DIR = "../data"
 DOCS_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "scraped_docs.json")
 EMBED_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "embeddings.npy")
 META_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "faiss_metadata.npy")
 FAISS_INDEX_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "faiss_index.bin")
 
 
-# Load GraphCodeBERT
 tokenizer = AutoTokenizer.from_pretrained(EMBED_MODEL, trust_remote_code=True)
 model = AutoModel.from_pretrained(EMBED_MODEL, trust_remote_code=True)
 
-MAX_TOKENS = 510  # Adjusted to fit special tokens
+MAX_TOKENS = 510 
 
 def chunk_text(text, max_tokens=MAX_TOKENS):
     """Chunks text into segments based on token limits."""
@@ -59,16 +57,15 @@ def generate_embedding(text):
     
     with torch.no_grad():
         outputs = model(**inputs)
-        last_hidden = outputs.last_hidden_state  # [batch, seq_len, hidden_dim]
-        attention_mask = inputs["attention_mask"].unsqueeze(-1)  # [batch, seq_len, 1]
+        last_hidden = outputs.last_hidden_state 
+        attention_mask = inputs["attention_mask"].unsqueeze(-1) 
 
-        # Mask out padding tokens
         masked_hidden = last_hidden * attention_mask
         summed = masked_hidden.sum(dim=1)
         counts = attention_mask.sum(dim=1)
-        mean_pooled = summed / counts  # shape: [batch, hidden_dim]
+        mean_pooled = summed / counts  
         embedding = mean_pooled[0]
-        embedding = embedding / embedding.norm()  # normalize
+        embedding = embedding / embedding.norm() 
         return embedding.numpy().astype('float32')
 
 
@@ -86,7 +83,7 @@ def process_json_and_generate_embeddings():
     all_metadata = []
 
     for i, doc in enumerate(docs):
-        doc_id = i  # Assign a unique document ID based on index
+        doc_id = i  
         url = doc.get("url", "")
         content = doc.get("content", "")
 
@@ -96,10 +93,10 @@ def process_json_and_generate_embeddings():
                 embedding = generate_embedding(chunk)
                 all_embeddings.append(embedding)
                 all_metadata.append({
-                    "doc_id": doc_id,  # ✅ Store doc_id for retrieval
+                    "doc_id": doc_id,  
                     "url": url,
                     "chunk_index": idx,
-                    "text": chunk  # ✅ Store full text for context retrieval
+                    "text": chunk  
                 })
 
             if i == 0:
@@ -112,7 +109,6 @@ def process_json_and_generate_embeddings():
         except Exception as e:
             print(f"❌ Error processing document {i}: {e}")
 
-    # ✅ Save embeddings and metadata
     try:
         np.save(EMBED_PATH, np.array(all_embeddings))
         np.save(META_PATH, np.array(all_metadata, dtype=object))
@@ -130,19 +126,15 @@ def build_faiss_index():
         assert len(embeddings) == len(metadata), "❌ Embeddings and metadata count mismatch."
         embeddings = embeddings.astype('float32')
 
-        # Initialize FAISS index (L2 similarity)
         dimension = embeddings.shape[1]
         index = faiss.IndexFlatL2(dimension)
 
-        # Add embeddings to the FAISS index
         index.add(embeddings)
         print(f"✅ FAISS index built with {index.ntotal} vectors.")
 
-        # Save the FAISS index
         faiss.write_index(index, FAISS_INDEX_PATH)
         print(f"💾 FAISS index saved to {FAISS_INDEX_PATH}")
         
-        # ✅ Delete embeddings.npy After Successful Indexing
         if os.path.exists(EMBED_PATH):
             os.remove(EMBED_PATH)
             print(f"🗑️ Deleted {EMBED_PATH} as FAISS index is now built!")
@@ -151,8 +143,5 @@ def build_faiss_index():
         print(f"❌ Error building FAISS index: {e}")
 
 if __name__ == "__main__":
-    # Step 1: Process JSON & Generate Embeddings
     process_json_and_generate_embeddings()
-    
-    # Step 2: Build FAISS Index and Delete Embeddings
     build_faiss_index()

@@ -3,11 +3,10 @@ from transformers import AutoTokenizer, AutoModel
 import torch
 from config import EMBED_MODEL
 
-# Load GraphCodeBERT for embeddings
 tokenizer = AutoTokenizer.from_pretrained(EMBED_MODEL)
 model = AutoModel.from_pretrained(EMBED_MODEL)
 
-MAX_TOKENS = 510  # Reduced to account for special tokens [CLS] and [SEP]
+MAX_TOKENS = 510  
 
 def generate_embedding(text):
     """Generates embedding for the input text."""
@@ -23,17 +22,10 @@ def cosine_similarity(a, b):
 
 def search_similar_errors(error_message, embeddings_file="py_embeddings.npy", metadata_file="py_metadata.npy", top_k=10):
     """Finds top K similar errors from embeddings."""
-    # Load precomputed embeddings and metadata
     embeddings = np.load(embeddings_file)
     metadata = np.load(metadata_file, allow_pickle=True)
-
-    # Generate embedding for the error message
     error_embedding = generate_embedding(error_message)
-
-    # Calculate cosine similarities
     similarities = [cosine_similarity(error_embedding, emb) for emb in embeddings]
-
-    # Get top K matches
     top_k_indices = np.argsort(similarities)[-top_k:][::-1]
 
     print(f"\n🔍 Top {top_k} Matches for Error: '{error_message}'\n")
@@ -44,6 +36,5 @@ def search_similar_errors(error_message, embeddings_file="py_embeddings.npy", me
         print(f"\nFull Documentation:\n{meta.get('full_content', 'No content available.')}\n")
 
 if __name__ == "__main__":
-    # Example error message
     error_msg = "KeyError: 'column_name' not found in DataFrame"
     search_similar_errors(error_msg)

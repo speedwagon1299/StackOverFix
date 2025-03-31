@@ -1,4 +1,7 @@
-# Configuration for each library's documentation site
+""""
+Configuration for each library's documentation site to scrape
+EMBED_MODEL and RERANK_MODEL chosen defined
+"""
 
 SITE_CONFIG = {
     1: {

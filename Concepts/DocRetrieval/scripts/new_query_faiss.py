@@ -8,21 +8,18 @@ from transformers import AutoTokenizer, AutoModel
 import json
 from config import RERANK_MODEL
 
-# Load API key
 load_dotenv()
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 
-# === File Paths ===
 library = "PyTorch"
 LIB_PATH = {
     "Python": "py", "Numpy": "np", "Pandas": "pd", "PyTorch": "pt",
     "Scikit-Learn": "sklearn", "TensorFlow Keras": "tfkeras"
 }
-DATA_DIR = "../data_2"
+DATA_DIR = "../data"
 FAISS_INDEX_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "faiss_index.bin")
 META_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "faiss_metadata.npy")
 
-# === Embed Model ===
 EMBED_MODEL = "nomic-ai/nomic-embed-text-v1"
 tokenizer = AutoTokenizer.from_pretrained(EMBED_MODEL, trust_remote_code=True)
 model = AutoModel.from_pretrained(EMBED_MODEL, trust_remote_code=True)
@@ -44,7 +41,6 @@ def search_and_rerank(query_text, top_k=25, rerank_k=2):
 
     retrieved = [{"score": D[0][i], **metadata[I[0][i]]} for i in range(top_k)]
 
-    # NVIDIA rerank request
     payload = {
         "model": RERANK_MODEL,
         "query": { "text": query_text },
@@ -69,7 +65,6 @@ def search_and_rerank(query_text, top_k=25, rerank_k=2):
             print(json.dumps(json_data, indent=2))
             return
 
-        # 🔁 Use correct 'rankings' field, not 'results'
         rankings = json_data["rankings"]
 
     except Exception as e:
@@ -81,7 +76,6 @@ def search_and_rerank(query_text, top_k=25, rerank_k=2):
             pass
         return
 
-    # Assign rerank_score based on returned ranking logits
     for r in rankings:
         idx = r["index"]
         score = r["logit"]
@@ -104,7 +98,6 @@ def search_and_rerank(query_text, top_k=25, rerank_k=2):
 
 
 if __name__ == "__main__":
-    # Example query
     query = """
     RuntimeError Expected all tensors to be on the same device in PyTorch
     """

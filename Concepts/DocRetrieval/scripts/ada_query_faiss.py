@@ -1,3 +1,8 @@
+"""
+Using OPEN_AI_API Key for ada embeddings, not used in project since 
+favourable results obtained without it
+"""
+
 import numpy as np
 import faiss
 import os
@@ -20,7 +25,7 @@ LIB_PATH = {
 }
 
 # Define paths
-DATA_DIR = "..\\data_2"
+DATA_DIR = "../data"
 faiss_index_path = os.path.join(DATA_DIR, LIB_PATH[library], "faiss_index.bin")
 meta_path = os.path.join(DATA_DIR, LIB_PATH[library], "faiss_metadata.npy")
 

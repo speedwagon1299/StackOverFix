@@ -1,3 +1,8 @@
+"""
+Using OPEN_AI_API Key for ada embeddings, not used in project since 
+favourable results obtained without it
+"""
+
 import json
 import numpy as np
 import faiss
@@ -6,7 +11,6 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 
-# Load OpenAI key
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -21,18 +25,16 @@ LIB_PATH = {
     "TensorFlow Keras": "tfkeras"
 }
 
-# Define paths
-DATA_DIR = "..\\data_2"
+DATA_DIR = "../data"
 DOCS_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "scraped_docs.json")
 EMBED_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "embeddings.npy")
 META_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "faiss_metadata.npy")
 FAISS_INDEX_PATH = os.path.join(DATA_DIR, LIB_PATH[library], "faiss_index.bin")
 
-MAX_TOKENS = 8191  # Ada-002 supports up to ~8191 tokens
+MAX_TOKENS = 8191  
 
 def chunk_text(text, max_tokens=MAX_TOKENS):
     """Naively chunk text based on token count approximation."""
-    # For Ada-002, token length ~= 4 chars per token avg
     max_chars = max_tokens * 4
     chunks = [text[i:i + max_chars] for i in range(0, len(text), max_chars)]
     return chunks
@@ -75,7 +77,7 @@ def process_json_and_generate_embeddings():
             for idx, chunk in enumerate(chunks):
                 embedding = generate_embedding(chunk)
                 if embedding is None:
-                    continue  # skip if OpenAI failed
+                    continue  
 
                 all_embeddings.append(embedding)
                 all_metadata.append({
@@ -112,7 +114,6 @@ def build_faiss_index():
         assert len(embeddings) == len(metadata), "❌ Embeddings and metadata count mismatch."
         embeddings = embeddings.astype('float32')
 
-        # Initialize FAISS index (cosine similarity → normalized vectors → use inner product)
         dimension = embeddings.shape[1]
         index = faiss.IndexFlatIP(dimension)
 

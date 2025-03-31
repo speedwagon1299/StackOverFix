@@ -1,43 +1,42 @@
 def zero_division_error():
-    x = 1 / 0  # Division by zero
+    x = 1 / 0  
 
 def key_error():
     d = {"name": "Alice"}
-    print(d["age"])  # KeyError: 'age'
+    print(d["age"])  
 
 def index_error():
     lst = [1, 2, 3]
-    print(lst[5])  # IndexError
+    print(lst[5]) 
 
 def attribute_error():
     x = None
-    x.append(5)  # AttributeError
+    x.append(5) 
 
 def type_error():
-    x = 5 + "hello"  # TypeError
+    x = 5 + "hello" 
 
 def recursion_error():
     def recurse():
-        recurse()  # Exceed recursion limit
+        recurse()
     recurse()
 
 def tensorflow_shape_mismatch():
     import tensorflow as tf
     a = tf.constant([1, 2, 3])
     b = tf.constant([[1], [2], [3]])
-    c = a + b  # InvalidArgumentError
+    c = a + b 
 
 def pytorch_shape_mismatch():
     import torch
     a = torch.tensor([1, 2, 3])
     b = torch.tensor([[1], [2], [3]])
-    c = a + b  # RuntimeError
+    c = a + bytearray
 
 def pytorch_invalid_shape():
     import torch
-    a = torch.tensor([[1, 2, 3], [4, 5]])  # ValueError
+    a = torch.tensor([[1, 2, 3], [4, 5]])
 
-# Dictionary to map function names to functions
 error_functions = {
     "ZeroDivisionError": zero_division_error,
     "KeyError": key_error,
