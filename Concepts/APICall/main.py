@@ -1,3 +1,5 @@
+import asyncio
+from contextlib import asynccontextmanager
 import os
 import json
 import faiss
@@ -16,7 +18,14 @@ from google.genai import types
 load_dotenv()
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = "0"
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 🚀 Start loading models asynchronously
+    asyncio.create_task(load_models())
+    yield
+    print("🛑 Shutting down")
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,6 +34,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/")
+def root():
+    return {"message": "✅ Backend is working"}
 
 # ✅ Globals (initialized on startup)
 tokenizer = None
@@ -44,8 +58,6 @@ LIB_PATH = {
 
 session_store = {}
 
-# ✅ Startup: load models only when app starts
-@app.on_event("startup")
 async def load_models():
     global tokenizer, embed_model, client
     tokenizer = AutoTokenizer.from_pretrained(EMBED_MODEL, trust_remote_code=True)
