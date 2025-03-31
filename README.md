@@ -70,4 +70,6 @@ npm run dev
 ## 📽️ Demo
 
 Watch the demo video:  
-▶️ [Click to view StackOverFix Demo](media/StackOverFix_Demo.mp4)
+
+https://github.com/user-attachments/assets/4f622442-28ff-49c9-9054-e11de1cd3d6e
+
