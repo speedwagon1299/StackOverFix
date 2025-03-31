@@ -8,17 +8,17 @@ StackOverFix is an AI-powered debugging assistant designed to help developers re
 
 📚 Supports semantic documentation search across popular Python libraries:
 
-NumPy
+1. NumPy
 
-Pandas
+2. Pandas
 
-PyTorch
+3. PyTorch
 
-Scikit-Learn
+4. Scikit-Learn
 
-TensorFlow Keras
+5. TensorFlow Keras
 
-Core Python
+6.  Core Python
 
 🔍 Uses `nomic-ai/nomic-embed-text-v1` to generate embeddings for documentation content stored in a FAISS vector store.
 
@@ -70,4 +70,4 @@ npm run dev
 ## 📽️ Demo
 
 Watch the demo video:  
-▶️ [Click to view StackOverFix Demo](media/StackOverFix_Demo.mkv)
+▶️ [Click to view StackOverFix Demo](media/StackOverFix_Demo.mp4)
