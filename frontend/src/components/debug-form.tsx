@@ -44,7 +44,7 @@ export function DebugForm() {
 
         try {
             const analyzeResponse = await fetch(
-                "http://127.0.0.1:8000/analyze_error",
+                "http://127.0.0.1:8000/analyze_error", //CHANGEME
                 {
                     method: "POST",
                     headers: {
@@ -63,7 +63,7 @@ export function DebugForm() {
                 throw new Error("analyze_error request failed");
 
             const submitResponse = await fetch(
-                "http://127.0.0.1:8000/submit_documents",
+                "http://127.0.0.1:8000/submit_documents", //CHANGEME
                 {
                     method: "POST",
                     headers: {
