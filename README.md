@@ -33,7 +33,7 @@ StackOverFix is an AI-powered debugging assistant designed to help developers re
 2. Run the following commands
 
 ```bash
-cd Concepts/API_Call
+cd Concepts/APICall
 pip install -r requirements.txt
 ```
 
