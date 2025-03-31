@@ -127,7 +127,7 @@ export function DebugResults({ results }: DebugResultsProps) {
                         </Alert>
                     </div>
 
-                    {/* Step 2: FAISS Vector Search (If Required) */}
+                    {/* Step 2: FAISS Vector Search */}
                     {docRequired && results.documentationResults && (
                         <div>
                             <h3 className="text-lg font-medium mb-3 flex items-center text-gray-200">
