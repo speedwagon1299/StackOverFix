@@ -19,7 +19,10 @@ export function CodeEditor({
     minHeight = "150px",
 }: CodeEditorProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-
+    useEffect(() => {
+        // language prop might be used for syntax highlighting in future
+        if (language) void language;
+    }, [language]);
     // Auto-resize textarea based on content
     useEffect(() => {
         const textarea = textareaRef.current;

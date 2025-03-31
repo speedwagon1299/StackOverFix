@@ -15,7 +15,7 @@ interface DebugResponse {
     requiresDocumentation: boolean;
     explanation: string;
     fixedCode: string;
-    updated_response: string;
+    updated_response?: string;
 }
 
 export function DebugForm() {
